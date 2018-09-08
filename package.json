@@ -1,0 +1,41 @@
+{
+  "name": "uwm_class_graph_traversal",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "compile": "webpack",
+    "watch": "webpack --watch",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon -w server server/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Senderhauf/uwm_class_graph_traversal.git"
+  },
+  "author": "Hart",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Senderhauf/uwm_class_graph_traversal/issues"
+  },
+  "homepage": "https://github.com/Senderhauf/uwm_class_graph_traversal#readme",
+  "dependencies": {
+    "express": "^4.16.3",
+    "mongodb": "^3.1.4"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.3",
+    "babel-loader": "^8.0.2",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-react": "^6.24.1",
+    "body-parser": "^1.18.3",
+    "nodemon": "^1.18.4",
+    "open": "0.0.5",
+    "react": "^16.5.0",
+    "react-dom": "^16.5.0",
+    "react-router": "^4.3.1",
+    "webpack": "^4.17.2",
+    "whatwg-fetch": "^2.0.4"
+  }
+}
