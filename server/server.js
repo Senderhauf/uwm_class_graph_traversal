@@ -67,11 +67,17 @@ function validateCourse(course, collection){
         return invalidFormat;
     }
 
-    const courseExists = db.collection(collection).find({name: course.name}, {_id:1, name:0, credits:0}).limit(1).count(with_limit_and_skip=true);
+    let courseExists = null;
+    db.collection(collection).find({name: course.name}).toArray(function(err, result) {
+        if (err){ throw err;}
+        console.log(result);
+        courseExists = result;
+    });
 
+    console.log("course exists:")
     console.log(courseExists);
 
-    // if(courseExists === null){
-    //     return `${course.name} already exists. Course Exists val = ${courseExists}`;
-    // }
+    if(courseExists != null){
+        return `${course.name} already exists. Course Exists val = ${courseExists}`;
+    }
 }
