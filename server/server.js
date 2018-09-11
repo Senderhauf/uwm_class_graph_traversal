@@ -37,14 +37,15 @@ app.get('/api/uwm_courses/comp_sci', (req, res) => {
 app.post('/api/uwm_courses/comp_sci', (req, res) => {
     const newCourse = req.body;
 
-    const err = validateCourse(newCourse, "comp_sci_courses");
+    //const err = validateCourse(newCourse, "comp_sci_courses");
+    const invalidFormat = Courses.validateCourseFormat(newCourse);
 
-    if(err) {
-        res.status(422).json({message: `Invalid request: ${err}`});
+    if(invalidFormat) {
+        res.status(422).json({message: `Invalid request: ${invalidFormat}`});
         return;
     }
 
-    db.collection('comp_sci_courses').insertOne(newCourse).then(result => 
+    db.collection('comp_sci_courses').update({name:newCourse.name}, newCourse, {upsert:true}).then(result => 
         db.collection('comp_sci_courses').find({_id: result.insertedId}).limit(1).next()
     ).then(newCourse => {
         res.json(newCourse);
@@ -67,17 +68,18 @@ function validateCourse(course, collection){
         return invalidFormat;
     }
 
-    let courseExists = null;
-    db.collection(collection).find({name: course.name}).toArray(function(err, result) {
+    let courseExists = db.collection(collection).find({name: course.name}).toArray(function(err, result) {
         if (err){ throw err;}
         console.log(result);
-        courseExists = result;
+        return result;
     });
 
-    console.log("course exists:")
-    console.log(courseExists);
 
-    if(courseExists != null){
-        return `${course.name} already exists. Course Exists val = ${courseExists}`;
-    }
+    
+    // console.log("course exists:")
+    // console.log(courseExists);
+
+    // if(courseExists != null){
+    //     return `${course.name} already exists. Course Exists val = ${courseExists}`;
+    // }
 }
