@@ -1,3 +1,7 @@
+/**
+ * Code ported to js from java. 
+ * Source: https://www.geeksforgeeks.org/find-paths-given-source-destination/
+ */
 
 class ClassesGraph {
     constructor(numVertices){
