@@ -56,30 +56,3 @@ app.post('/api/uwm_courses/comp_sci', (req, res) => {
 });
 
 
-/**
- * Validate the course is not in the database already after validating it's format is correct.
- * Method in server.js due to db connection variable already being instantiated in this file (can I pass a db variable?)
- * @param {*} course 
- */
-function validateCourse(course, collection){
-    const invalidFormat = Courses.validateCourseFormat(course);
-
-    if(invalidFormat){
-        return invalidFormat;
-    }
-
-    let courseExists = db.collection(collection).find({name: course.name}).toArray(function(err, result) {
-        if (err){ throw err;}
-        console.log(result);
-        return result;
-    });
-
-
-    
-    // console.log("course exists:")
-    // console.log(courseExists);
-
-    // if(courseExists != null){
-    //     return `${course.name} already exists. Course Exists val = ${courseExists}`;
-    // }
-}
