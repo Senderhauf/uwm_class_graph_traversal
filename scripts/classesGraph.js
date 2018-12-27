@@ -4,13 +4,16 @@
  */
 
 class ClassesGraph {
-    constructor(numVertices){
-        this.numVertices = numVertices;
-        this.adjList = [[],[],[],[]];
+    constructor(){
+        //this.numVertices = numVertices;
+        this.adjList = [];
         //don't need to initialize an arraylist of arraylists
     }
 
     addEdge(u, v){
+        while(u >= this.adjList.length || v >= this.adjList.length){
+            this.adjList.push([])
+        }
         this.adjList[u].push(v);
     }
 
@@ -44,7 +47,7 @@ class ClassesGraph {
 }
 
 function main(){
-    var g = new ClassesGraph(4);
+    var g = new ClassesGraph();
 
     g.addEdge(0,1);
     g.addEdge(0,2);
@@ -52,8 +55,9 @@ function main(){
     g.addEdge(2,0);
     g.addEdge(2,1);
     g.addEdge(1,3);
+    g.addEdge(1,7)
 
-    g.printAllPaths(2,3);
+    g.printAllPaths(2,7);
 }
 
 main();
