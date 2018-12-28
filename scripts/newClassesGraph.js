@@ -7,19 +7,31 @@
 
 class ClassesGraph{
     constructor(){
+        /**
+         * use map to hold the adjacency list and edge color lists 
+         *      supports more types 
+         *      built in iterator capability
+         */
         this.adjList = new Map()
+        this.edgeColors = new Map()
     }
 
     addEdge(u, v){
         if (!this.adjList.has(u)){
             this.adjList.set(u, [])
+            this.edgeColors.set(u, new Map())
         }
         if (!this.adjList.has(v)){
             this.adjList.set(v, [])
+            this.edgeColors.set(v, new Map())
         }
-        let l = this.adjList.get(u)
-        l.push(v)
-        this.adjList.set(u, l)
+        let uAdj = this.adjList.get(u)
+        uAdj.push(v)
+        this.adjList.set(u, uAdj)
+
+        let uEdg = this.edgeColors.get(u)
+        uEdg.set(v, 'green')
+        this.edgeColors.set(u, uEdg)
     }
 
     printAllPaths(s, d){
@@ -35,15 +47,17 @@ class ClassesGraph{
         isVisited.set(u, true)
         
         if (u == d){
-            console.log(localPathList);
-        }
-
-        for (let i of this.adjList.get(u)){
-            if (isVisited.get(i) != true){
-                localPathList.push(i);
-                this.printAllPathsUtil(i, d, isVisited, localPathList);
-
-                localPathList.splice(localPathList.indexOf(i), 1);
+            console.log('>'+localPathList);
+        } 
+        else{
+            for (let i of this.adjList.get(u)){
+                if (isVisited.get(i) != true){
+                    localPathList.push(i);
+                    this.printAllPathsUtil(i, d, isVisited, localPathList);
+                    console.log(localPathList)
+                    localPathList.splice(localPathList.indexOf(i), 1);
+                    console.log(localPathList)
+                }
             }
         }
 
@@ -65,8 +79,17 @@ function main(){
     g.printAllPaths('c','h');
 
     //DEBUG
+    console.log('\nADJACENCY LISTS')
     for (let i of g.adjList){
         console.log(`${i.toString()}`)
+    }
+
+    //DEBUG
+    console.log('\nEDGE COLORS')
+    for (let i of g.edgeColors.keys()){
+        let arr = g.edgeColors.get(i)
+        console.log(arr)
+        //console.log(`${arr.map(x => x.key+','+x.value )}`)
     }
 }
 
