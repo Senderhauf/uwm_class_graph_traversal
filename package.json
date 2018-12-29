@@ -21,6 +21,7 @@
   "homepage": "https://github.com/Senderhauf/uwm_class_graph_traversal#readme",
   "dependencies": {
     "express": "^4.16.3",
+    "inquirer": "^6.2.1",
     "mongodb": "^3.1.4"
   },
   "devDependencies": {

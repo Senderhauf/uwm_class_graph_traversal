@@ -14,17 +14,23 @@ Represent in-edges and out-edges as adjlists
 
 Find unvisited node n
     if n has no in-edges
-        add to curSem
-        mark n as visited
-        for all n out-edges
-            mark as green
+        continue
     
-    elif n has no 'red' in-edges
-        if at least 1 'or' in-edge
-            add to curSem
-            mark n as visited
-            for all n out-edges
-                mark as green
+    elif n has no red 'and' in-edges
+        if n has no 'or' edges || at least 1 green 'or' in-edge
+            continue
+        else
+            return
+    else 
+        return
+
+    add to curSem
+    mark n as visited
+    for all n out-edges
+        mark as green
+    
+    return
+
 a,b,c,d
 b,d,h
 c,a,b
