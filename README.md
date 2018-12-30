@@ -10,6 +10,7 @@ node ./scripts/classesGraph.js
 * Refactor graphtrace algorithm for use of mongodb
 * Create entry form component for courses
 * Connect ratemyprofessor API
+* Analyze Runtime 
 
 
 

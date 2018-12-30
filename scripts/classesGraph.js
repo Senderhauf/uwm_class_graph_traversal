@@ -21,6 +21,16 @@ class ClassesGraph{
         this.isVisited = new Map()
     }
 
+    addVertex(u){
+        if (!this.outEdges.has(u)){
+            this.outEdges.set(u, new Map())
+            this.outEdgeColors.set(u, new Map())
+            this.inEdgeColors.set(u, new Map())
+            this.inEdges.set(u, new Map())
+            this.isVisited.set(u, false)
+        }
+    }
+
     addEdge(u, v, edgeType){
         // add the edge u to all three lists if not in outEdges list
         if (!this.outEdges.has(u)){
@@ -58,17 +68,36 @@ class ClassesGraph{
         this.inEdges.set(v, vIn)
     }
 
+    addDummyEdge(dest, arr){
+        let dummyNode = dest+'dummy'
+        this.addEdge(dummyNode, dest, 'and')
+        for (let i of arr){
+            this.addEdge(i, dummyNode, 'or')
+        }
+    }
     visitValidNode(){
+        //return null if there are no more valid nodes
+        return this.getRandomValidNode() == null ? null : this.visitValidNodeHelper()
+    }
+
+    getRandomValidNode(){
         let arr = Array.from(this.isVisited.keys()).filter(x => this.isVisited.get(x) === false)
-        
+
         if (arr.length == 0){
             return null
         }
         
-        return this.visitValidNodeHelper(arr)
+        //console.log(`DEBUG ARR ${arr}`)
+
+        //is this efficient? will it call duplicate values if the arr is recalculated everytime it is called?
+        let min = 0;
+        let max = arr.length;
+        let randIndex = Math.floor(Math.random() * (+max - +min)) + +min;
+        //console.log(`DEBUG min: ${min}, max: ${max}, random index: ${randIndex}`)
+        return arr[randIndex]; 
     }
 
-    visitValidNodeHelper(validNodes){
+    visitValidNodeHelper(){
         let found = false
         let i = 0
         let nextNodeKey
@@ -76,9 +105,15 @@ class ClassesGraph{
         while(!found){
             //console.log(`WHILE ${i}`)
             
-            nextNodeKey = validNodes[i]
+            nextNodeKey = this.getRandomValidNode()
+            //console.log(`DEBUG NEXTNODEKEY: ${nextNodeKey}`)
+
+            // if nextNodeKey contains 'dummy' then continue searching (found == false)
+            if (nextNodeKey.includes('dummy')){
+                this.nodeVisited(nextNodeKey)
+            }
             // check if n has no in-edges
-            if (Array.from(this.inEdges.get(nextNodeKey)).length == 0){
+            else if (Array.from(this.inEdges.get(nextNodeKey)).length == 0){
                 //console.log('DEBUG 1')
                 this.nodeVisited(nextNodeKey)
                 found = true
@@ -158,88 +193,72 @@ class ClassesGraph{
         return false
     }
 
-    printAllPaths(s, d){
-        var pathList = []
-        var isVisited = new Map()
-        
-        pathList.push(s)
-
-        this.printAllPathsUtil(s,d,isVisited, pathList)
-    }
-
-    printAllPathsUtil(u, d, isVisited, localPathList){
-        isVisited.set(u, true)
-        
-        if (u == d){
-            console.log('>'+localPathList);
-        } 
-        else{
-            for (let i of this.outEdges.get(u)){
-                if (isVisited.get(i) != true){
-                    localPathList.push(i);
-                    this.printAllPathsUtil(i, d, isVisited, localPathList);
-                    console.log(localPathList)
-                    localPathList.splice(localPathList.indexOf(i), 1);
-                    console.log(localPathList)
-                }
-            }
+    debugAdjacencyLists(){
+        //DEBUG
+        console.log('\nOUT EDGES ADJACENCY LIST')
+        for (let i of this.outEdges.keys()){
+            let arr = this.outEdges.get(i)
+            console.log(`${i}:`)
+            console.log(arr)
         }
-
-        isVisited.set(u, false)
+        //DEBUG
+        console.log('\nIN EDGES ADJACENCY LIST')
+        for (let i of this.inEdges.keys()){
+            let arr = this.inEdges.get(i)
+            console.log(`${i}:`)
+            console.log(arr)
+        }
+        //DEBUG
+        console.log('\nOUT EDGE COLORS')
+        for (let i of this.outEdgeColors.keys()){
+            let arr = this.outEdgeColors.get(i)
+            console.log(`${i}:`)
+            console.log(arr)
+            //console.log(`${arr.map(x => x.key+','+x.value )}`)
+        }
+        //DEBUG
+        console.log('\nIN EDGE COLORS')
+        for (let i of this.inEdgeColors.keys()){
+            let arr = this.inEdgeColors.get(i)
+            console.log(`${i}:`)
+            console.log(arr)
+            //console.log(`${arr.map(x => x.key+','+x.value )}`)
+        }
     }
 }
 
 function main(){
     var g = new ClassesGraph();
 
-    //g.addEdge('a','c','and');
-    //g.addEdge('a','d','and');
+    /*
+    g.addVertex('a')
     g.addEdge('e','f','and');
     g.addEdge('b','f','and');
     g.addEdge('g','f','and');
     g.addEdge('g','i','and');
     g.addEdge('h','i','and');
+    */
+    
+    g.addVertex('cs150')
+    g.addEdge('math116','cs250','or')
+    g.addEdge('math211','cs250','or')
+    g.addEdge('cs250', 'cs251', 'and')
+    g.addDummyEdge('cs251', ['math116', 'math211'])
+    g.addEdge('cs250', 'cs315', 'and')
+    g.addDummyEdge('cs315', ['math116', 'math211'])
 
-    console.log('HELLO! WELCOME TO CLASS GRAPH TRAVERSAL.')
+    console.log('HELLO! WELCOME TO CLASS GRAPH TRAVERSAL.\n')
     
     let i = 1
-    console.log(`Valid Node ${i++}: ${g.visitValidNode()}`)
-    console.log(`Valid Node ${i++}: ${g.visitValidNode()}`)
-    console.log(`Valid Node ${i++}: ${g.visitValidNode()}`)
-    console.log(`Valid Node ${i++}: ${g.visitValidNode()}`)
-    console.log(`Valid Node ${i++}: ${g.visitValidNode()}`)
-    console.log(`Valid Node ${i++}: ${g.visitValidNode()}`)
+    console.log(`Semester ${i++}: `)
+    console.log(`${g.visitValidNode()}, ${g.visitValidNode()}, ${g.visitValidNode()}`)
 
-    console.log('GOODBYE!')
+    console.log(`Semester ${i++}: `)
+    console.log(`${g.visitValidNode()}, ${g.visitValidNode()}, ${g.visitValidNode()}`)
 
-    //g.printAllPaths('c','h');
+    console.log('\nGOODBYE!')
 
-    //DEBUG
-    console.log('\nOUT EDGES ADJACENCY LIST')
-    for (let i of g.outEdges.keys()){
-        let arr = g.outEdges.get(i)
-        console.log(arr)
-   }
-    //DEBUG
-    console.log('\nIN EDGES ADJACENCY LIST')
-    for (let i of g.inEdges.keys()){
-        let arr = g.inEdges.get(i)
-        console.log(arr)
-    }
-    //DEBUG
-    console.log('\nOUT EDGE COLORS')
-    for (let i of g.outEdgeColors.keys()){
-        let arr = g.outEdgeColors.get(i)
-        console.log(arr)
-        //console.log(`${arr.map(x => x.key+','+x.value )}`)
-    }
-    //DEBUG
-    console.log('\nIN EDGE COLORS')
-    for (let i of g.inEdgeColors.keys()){
-        let arr = g.inEdgeColors.get(i)
-        console.log(arr)
-        //console.log(`${arr.map(x => x.key+','+x.value )}`)
-    }
+    //g.debugAdjacencyLists()
 }
 
 main();
