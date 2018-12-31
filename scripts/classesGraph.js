@@ -106,11 +106,28 @@ class ClassesGraph{
             //console.log(`WHILE ${i}`)
             
             nextNodeKey = this.getRandomValidNode()
-            //console.log(`DEBUG NEXTNODEKEY: ${nextNodeKey}`)
+
+            //console.log(`DEBUG 1: ${nextNodeKey}`)                
 
             // if nextNodeKey contains 'dummy' then continue searching (found == false)
             if (nextNodeKey.includes('dummy')){
                 this.nodeVisited(nextNodeKey)
+            }
+            // insert new conditional in 'else if' below
+            else if(this.hasNoAndOutEdges(nextNodeKey) && this.hasAtLeastOneOrOutEdge(nextNodeKey)){
+                //debug
+                //console.log(`DEBUG 2: ${nextNodeKey}`)                
+                for(let n of this.outEdges.get(nextNodeKey).keys()){
+                    //console.log(`DEBUG 3: ${n}`)
+                    let a = !this.isVisited.get(n)
+                    let b = !this.hasAtLeastOneOrGreenInEdge(n)
+                    //console.log(`DEBUG 3 cont: ${a} ${b}`)
+                    if(a && b){
+                        this.nodeVisited(nextNodeKey)
+                        found = true
+                        break
+                    }
+                }
             }
             // check if n has no in-edges
             else if (Array.from(this.inEdges.get(nextNodeKey)).length == 0){
@@ -193,6 +210,26 @@ class ClassesGraph{
         return false
     }
 
+    hasNoAndOutEdges(n){
+        let outEdg = this.outEdges.get(n)
+        for (let i of outEdg.keys()){
+            if (outEdg.get(i) === 'and'){
+                return false
+            }
+        }
+        return true
+    }
+
+    hasAtLeastOneOrOutEdge(n){
+        let outEdg = this.outEdges.get(n)
+        for (let i of outEdg.keys()){
+            if (outEdg.get(i) === 'or'){
+                return true
+            }
+        }
+        return false
+    }
+
     debugAdjacencyLists(){
         //DEBUG
         console.log('\nOUT EDGES ADJACENCY LIST')
@@ -254,7 +291,7 @@ function main(){
     console.log(`${g.visitValidNode()}, ${g.visitValidNode()}, ${g.visitValidNode()}`)
 
     console.log(`Semester ${i++}: `)
-    console.log(`${g.visitValidNode()}, ${g.visitValidNode()}, ${g.visitValidNode()}`)
+    console.log(`${g.visitValidNode()}, ${g.visitValidNode()}`)
 
     console.log('\nGOODBYE!')
 

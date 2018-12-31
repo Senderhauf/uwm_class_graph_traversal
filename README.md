@@ -20,7 +20,6 @@ Represent in-edges and out-edges as adjlists
 >Find unvisited node n
 >>    if n has no in-edges
 >>>        continue
->    
 >>    elif n has no red 'and' in-edges
 >>>        if n has no 'or' edges || at least 1 green 'or' in-edge
 >>>>            continue
@@ -28,12 +27,10 @@ Represent in-edges and out-edges as adjlists
 >>>>            return
 >>    else 
 >>>        return
->
 >>    add to curSem
 >>    mark n as visited
 >>    for all n out-edges
 >>>        mark as green
->    
 >>    return
 
  
