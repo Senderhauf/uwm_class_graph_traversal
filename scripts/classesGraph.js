@@ -16,9 +16,12 @@ class ClassesGraph{
          */
         this.outEdges = new Map()
         this.inEdges = new Map()
-        // this.outEdgeColors = new Map()
-        // this.inEdgeColors = new Map()
         this.isVisited = new Map() // sorted map
+        this.maxCourseTypes = new Map()
+    }
+
+    addMaxTypePerGroup(maxNum, type){
+        this.maxCourseTypes.set(type, maxNum)
     }
 
     addVertex(u){
@@ -44,9 +47,11 @@ class ClassesGraph{
         }
         // get the current outEdges list for u, add v, and add the new list to preserve it previous adjacency list
         let uOut = this.outEdges.get(u)
-        uOut.set(v, edgeType)
-        this.outEdges.set(u, uOut)
-
+        //if(!u.uOut.has(v)){
+            uOut.set(v, edgeType)
+            this.outEdges.set(u, uOut)
+        //}
+        
         // get the current inEdges list for v, add u, and add the new list to preserve it's previous adjacency list
         let vIn = this.inEdges.get(v)
         vIn.set(u, edgeType)
@@ -83,7 +88,8 @@ class ClassesGraph{
 
             nextNodeKey = this.getRandomNotVisitedNode()
             //console.log(`DEBUG nextNodeKey: ${nextNodeKey}`)
-            if(nextNodeKey === null){
+
+            if(nextNodeKey === null || typeof nextNodeKey === 'undefined'){
                 return currentGroup
             }
             else if (currentGroup.includes(nextNodeKey)){
@@ -114,7 +120,6 @@ class ClassesGraph{
                     currentGroup.push(nextNodeKey)
                 }
             }
-            counter++
         }
 
         return currentGroup
@@ -125,16 +130,20 @@ class ClassesGraph{
      */
     getRandomNotVisitedNode(){
         let arr = Array.from(this.isVisited.keys()).filter(x => this.isVisited.get(x) === false)
-        //console.log(`DEBUG Not Visited: ${arr}`)
+        arr = this.mySort(arr)
+        let min = 0, max
+
         if (arr.length == 0){
             return null
         }
-        
-        //is this efficient? will it call duplicate values if the arr is recalculated everytime it is called?
-        let min = 0;
-        let max = arr.length;
+        // else if (arr.length >= 10){
+        //     max = 10
+        // }
+        else {
+            max = arr.length;
+        }
+
         let randIndex = Math.floor(Math.random() * (+max - +min)) + +min;
-        //console.log(`DEBUG Random index: ${randIndex}`)
         return arr[randIndex]; 
     }
 
@@ -297,19 +306,71 @@ class ClassesGraph{
         }
         return true
     }
+
+    mySort(array){
+        let arr = Array.from(array.slice())
+        // remove non-numerical values, sort
+        arr = arr.map(x => x.replace(/\D/g,'')).sort()
+        let retArray = []
+        for (let element of arr){
+            let nextElement = array.find(x => x.includes(element))
+            if (retArray.includes(nextElement)){
+                retArray.push(nextElement + 'dummy')
+            }
+            else{
+                retArray.push(nextElement)
+            }
+        }
+        return retArray
+    }
+
+    maxTypeReached(array, nextNode){
+        maxTypes = this.maxCourseTypes.keys()
+        for (let type in maxTypes){
+            //if (nextNode.)
+        }
+    }
+
+    maxTypeReachedHelper(array, courseType, max){
+        let count = 0
+
+        switch(courseType){
+
+            case '100':
+                count = array.filter(x => x.match('1[0-9][0-9]') != null).length
+                break
+            
+            case '200':
+                count = array.filter(x => x.match('2[0-9][0-9]') != null).length
+                break
+
+            case '300':
+                count = array.filter(x => x.match('3[0-9][0-9]') != null).length
+                break
+
+            case '400':
+                count = array.filter(x => x.match('4[0-9][0-9]') != null).length
+                break
+            
+            case '500':
+                count = array.filter(x => x.match('5[0-9][0-9]') != null).length
+                break
+
+            case '600':
+                count = array.filter(x => x.match('6[0-9][0-9]') != null).length
+                break
+
+            default:
+                count = array.filter(x => x.includes(courseType)).length        
+            
+        }
+
+        return count >= max
+    }
 }
 
 function main(){
     var g = new ClassesGraph();
-
-    /*
-    g.addVertex('a')
-    g.addEdge('e','f','and');
-    g.addEdge('b','f','and');
-    g.addEdge('g','f','and');
-    g.addEdge('g','i','and');
-    g.addEdge('h','i','and');
-    */
     
     g.addEdge('cs150', 'cs250', 'and')
     g.addEdge('math116','cs250','or')
@@ -318,23 +379,33 @@ function main(){
     g.addDummyEdge('cs251', ['math116', 'math211'])
     g.addEdge('cs250', 'cs315', 'and')
     g.addDummyEdge('cs315', ['math116', 'math211'])
-    //g.addDummyEdge('cs317', ['math226', 'math221', 'math231'])
+    g.addDummyEdge('cs317', ['math226', 'math221', 'math231'])
     g.addEdge('cs250', 'cs317', 'and')
+    g.addEdge('cs251', 'cs337', 'and')
+    g.addEdge('cs251', 'cs351', 'and')
+    g.addDummyEdge('cs351', ['math116', 'math211'])
+    g.addEdge('cs351', 'cs361', 'and')
+    g.addEdge('GEREnglish', 'cs361', 'and')
+    //g.addVertex('cs395') // req: sophmore status
+    g.addEdge('cs317', 'cs417', 'and')
+    g.addDummyEdge('cs417', ['math221', 'math232'])
+
+    //g.debugAdjacencyLists()
 
     console.log('HELLO! WELCOME TO CLASS GRAPH TRAVERSAL.\n')
     
     let i = 1
     console.log(`Semester ${i++}: `)
-    console.log(`${g.visitValidNodes(2)}`)
+    console.log(`${g.visitValidNodes(4)}`)
 
     console.log(`\nSemester ${i++}: `)
-    console.log(`${g.visitValidNodes(2)}`)
+    console.log(`${g.visitValidNodes(5)}`)
 
     console.log(`\nSemester ${i++}: `)
-    console.log(`${g.visitValidNodes(2)}`)
+    console.log(`${g.visitValidNodes(5)}`)
 
     console.log(`\nSemester ${i++}: `)
-    console.log(`${g.visitValidNodes(2)}`)
+    console.log(`${g.visitValidNodes(5)}`)
 
     console.log('\nGOODBYE!')
 
