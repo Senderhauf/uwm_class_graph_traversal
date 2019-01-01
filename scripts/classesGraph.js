@@ -16,18 +16,16 @@ class ClassesGraph{
          */
         this.outEdges = new Map()
         this.inEdges = new Map()
-        this.outEdgeColors = new Map()
-        this.inEdgeColors = new Map()
+        // this.outEdgeColors = new Map()
+        // this.inEdgeColors = new Map()
         this.isVisited = new Map()
     }
 
     addVertex(u){
         if (!this.outEdges.has(u)){
             this.outEdges.set(u, new Map())
-            this.outEdgeColors.set(u, new Map())
-            this.inEdgeColors.set(u, new Map())
             this.inEdges.set(u, new Map())
-            this.isVisited.set(u, false)
+            this.isVisited.set(u, false)    // sorted map
         }
     }
 
@@ -35,16 +33,12 @@ class ClassesGraph{
         // add the edge u to all three lists if not in outEdges list
         if (!this.outEdges.has(u)){
             this.outEdges.set(u, new Map())
-            this.outEdgeColors.set(u, new Map())
-            this.inEdgeColors.set(u, new Map())
             this.inEdges.set(u, new Map())
             this.isVisited.set(u, false)
         }
         // add the edge v to all three lists if not in outEdges list
         if (!this.outEdges.has(v)){
             this.outEdges.set(v, new Map())
-            this.outEdgeColors.set(v, new Map())
-            this.inEdgeColors.set(v, new Map())
             this.inEdges.set(v, new Map())
             this.isVisited.set(v, false)
         }
@@ -53,15 +47,6 @@ class ClassesGraph{
         uOut.set(v, edgeType)
         this.outEdges.set(u, uOut)
 
-        // get the current edgeColors list, add the new edge with the value green, add the updated list back to the edgeColors list
-        let uEdg = this.outEdgeColors.get(u)
-        uEdg.set(v, 'red')
-        this.outEdgeColors.set(u, uEdg)
-        
-        let vEdg = this.inEdgeColors.get(v)
-        vEdg.set(u, 'red')
-        this.inEdgeColors.set(v, vEdg)        
-        
         // get the current inEdges list for v, add u, and add the new list to preserve it's previous adjacency list
         let vIn = this.inEdges.get(v)
         vIn.set(u, edgeType)
@@ -75,156 +60,173 @@ class ClassesGraph{
             this.addEdge(i, dummyNode, 'or')
         }
     }
-    visitValidNode(){
+
+    visitValidNodes(num){
         //return null if there are no more valid nodes
-        return this.getRandomValidNode() == null ? null : this.visitValidNodeHelper()
+        if (num <= 0){
+            return null
+        }
+
+        let currentGroup = []
+        this.visitValidNodeHelper(currentGroup, num)
+        currentGroup.map(x => this.isVisited.set(x, true))
+
+        return currentGroup
     }
 
-    getRandomValidNode(){
-        let arr = Array.from(this.isVisited.keys()).filter(x => this.isVisited.get(x) === false)
+    visitValidNodeHelper(currentGroup, groupSize){
+        let nextNodeKey
+        let counter = 0
 
+        while (counter < 30 && currentGroup.length < groupSize){
+            counter++   // counter placed at beginning of while loop in case 'continue' logic encountered
+
+            nextNodeKey = this.getRandomNotVisitedNode()
+            console.log(`DEBUG nextNodeKey: ${nextNodeKey}`)
+            if(nextNodeKey === null){
+                return currentGroup
+            }
+            else if (currentGroup.includes(nextNodeKey)){
+                continue
+            }
+            else if (nextNodeKey.includes('dummy')){
+                this.isVisited.set(nextNodeKey, true)
+            } 
+            else if (this.isValidVisitableNode(nextNodeKey, currentGroup)){
+                //check whether n is a competing dependency
+
+                currentGroup.push(nextNodeKey)
+            }
+            counter++
+        }
+
+        return currentGroup
+    }
+
+    /**
+     * This function returns the name of a valid node that has not been visited and is eligible to be visited.
+     */
+    getRandomNotVisitedNode(){
+        let arr = Array.from(this.isVisited.keys()).filter(x => this.isVisited.get(x) === false)
+        //console.log(`DEBUG Not Visited: ${arr}`)
         if (arr.length == 0){
             return null
         }
         
-        //console.log(`DEBUG ARR ${arr}`)
-
         //is this efficient? will it call duplicate values if the arr is recalculated everytime it is called?
         let min = 0;
         let max = arr.length;
         let randIndex = Math.floor(Math.random() * (+max - +min)) + +min;
-        //console.log(`DEBUG min: ${min}, max: ${max}, random index: ${randIndex}`)
+        console.log(`DEBUG Random index: ${randIndex}`)
         return arr[randIndex]; 
     }
 
-    visitValidNodeHelper(){
-        let found = false
-        let i = 0
-        let nextNodeKey
+    /**
+     * Eligibility requirements for valid node n include:
+     *      if n has 'and' in-edges (m -> n), all m have been visited
+     *      if n has 'or' in-edges (m -> n) at least one has been visited
+     * @param {string} node 
+     */
+    isValidVisitableNode(node, currentGroup){
+        let curGroupCopy = currentGroup
 
-        while(!found){
-            //console.log(`WHILE ${i}`)
-            
-            nextNodeKey = this.getRandomValidNode()
-
-            //console.log(`DEBUG 1: ${nextNodeKey}`)                
-
-            // if nextNodeKey contains 'dummy' then continue searching (found == false)
-            if (nextNodeKey.includes('dummy')){
-                this.nodeVisited(nextNodeKey)
-            }
-            // insert new conditional in 'else if' below
-            else if(this.hasNoAndOutEdges(nextNodeKey) && this.hasAtLeastOneOrOutEdge(nextNodeKey)){
-                //debug
-                //console.log(`DEBUG 2: ${nextNodeKey}`)                
-                for(let n of this.outEdges.get(nextNodeKey).keys()){
-                    //console.log(`DEBUG 3: ${n}`)
-                    let a = !this.isVisited.get(n)
-                    let b = !this.hasAtLeastOneOrGreenInEdge(n)
-                    //console.log(`DEBUG 3 cont: ${a} ${b}`)
-                    if(a && b){
-                        this.nodeVisited(nextNodeKey)
-                        found = true
-                        break
-                    }
-                }
-            }
-            // check if n has no in-edges
-            else if (Array.from(this.inEdges.get(nextNodeKey)).length == 0){
-                //console.log('DEBUG 1')
-                this.nodeVisited(nextNodeKey)
-                found = true
-            }
-            // check n has no red 'and' in-edges
-            else if (this.hasNoRedAndInEdges(nextNodeKey)){
-                //console.log('DEBUG 2')
-                if (this.hasNoOrInEdges(nextNodeKey) || this.hasAtLeastOneOrGreenInEdge(nextNodeKey)){
-                    //console.log('DEBUG 3')
-                    this.nodeVisited(nextNodeKey)
-                    found = true
-                }
-            }
-            else {
-                found = false
-                //console.log('DEBUG 4')
-            }
-
-            i += 1
+        // Requirement 1: n has no in-edges and no out-edges
+        if (Array.from(this.inEdges.get(node)).length === 0 && Array.from(this.outEdges.get(node)).length === 0){
+            console.log(`DEBUG REQ 1: ${node}`)
+            return true
+        }
+        if(this.hasOrOutEdges(node)){
+            console.log(`DEBUG REQ 2: ${node}`)
+            return this.shouldVisitCompetingDependency(node, curGroupCopy) ? true : false
+        }
+        // Requirement 3: n has 'and' in-edges (m -> n), all m have been visited
+        if (this.hasAndInEdges(node)){
+            console.log(`DEBUG REQ 3: ${node}`)
+            return this.allAndInEdgesAreVisited(node) ? true : false
+        }
+        // Requirement 4: n has 'or' in-edges (m -> n) at least one has been visited
+        if (this.hasOrInEdges(node)){
+            console.log(`DEBUG REQ 4: ${node}`)
+            return this.hasAtLeastOneOrVisitedInEdge(node) ? true : false            
         }
 
-        return nextNodeKey
+        return true
     }
 
-    nodeVisited(n){
-        // mark n as visited
-        this.isVisited.set(n, true)
-        //for all n out-edges: mark as green; since out-edges and edge color adjlists are the same use edgecolor adjlist directly
-        let uOut = this.outEdgeColors.get(n)
-        for (let i of uOut.keys()){
-            uOut.set(i, 'green')
-        }
-        this.outEdgeColors.set(n, uOut)
-
-        // also reset all in edge colors
-        for (let i of this.inEdgeColors.keys()){
-            let uIn = this.inEdgeColors.get(i)
-            for (let j of uIn.keys()){
-                if (j == n){
-                    uIn.set(j, 'green')
-                }
-            }
-            this.inEdgeColors.set(i, uIn)
-        }
-    }
-
-    hasNoRedAndInEdges(n){
-        let inEdgCol = this.inEdgeColors.get(n)
-        let inEdg = this.inEdges.get(n)
-        for (let i of inEdgCol.keys()){
-            if (inEdgCol.get(i) === 'red' && inEdg.get(i) === 'and'){
+    allAndInEdgesAreVisited(n){
+        let nInEdges = this.inEdges.get(n)
+        for (let edge of nInEdges.entries()){
+            let edgeName = edge[0]
+            let edgeType = edge[1]
+            if (edgeType === 'and' && this.isVisited.get(edgeName) === false){
                 return false
             }
         }
         return true
     }
 
-    hasNoOrInEdges(n){
+    hasOrInEdges(n){
         let inEdg = this.inEdges.get(n)
         for(let i of inEdg.keys()){
             if (inEdg.get(i) === 'or'){
-                return false
-            }
-        }
-        return true
-    }
-
-    hasAtLeastOneOrGreenInEdge(n){
-        let inEdgCol = this.inEdgeColors.get(n)
-        let inEdg = this.inEdges.get(n)
-
-        for (let i of inEdgCol.keys()){
-            if (inEdgCol.get(i) === 'green' && inEdg.get(i) === 'or'){
                 return true
             }
         }
         return false
     }
 
-    hasNoAndOutEdges(n){
+    hasOrOutEdges(n){
         let outEdg = this.outEdges.get(n)
-        for (let i of outEdg.keys()){
-            if (outEdg.get(i) === 'and'){
-                return false
-            }
-        }
-        return true
-    }
-
-    hasAtLeastOneOrOutEdge(n){
-        let outEdg = this.outEdges.get(n)
-        for (let i of outEdg.keys()){
+        for(let i of outEdg.keys()){
             if (outEdg.get(i) === 'or'){
                 return true
+            }
+        }
+        return false
+    }
+
+    hasAndInEdges(n){
+        let inEdg = this.inEdges.get(n)
+        for(let i of inEdg.keys()){
+            if (inEdg.get(i) === 'and'){
+                return true
+            }
+        }
+        return false
+    }
+
+    hasAtLeastOneOrVisitedInEdge(n){
+        let nInEdges = this.inEdges.get(n)
+        for (let edge of nInEdges.entries()){
+            let edgeName = edge[0]
+            let edgeType = edge[1]
+            if (edgeType === 'or' && this.isVisited.get(edgeName) === true){
+                return true
+            }
+        }
+        return false
+    }
+
+    /**
+     * METHOD CASE: n has competing dependency edges
+     *      n has 'or' out-edges that are the same as other nodes
+     *      visit as few as possible non-necessary nodes with 'or' out-edges
+     *      foreach node i in n.out-edges that is not visited:
+     *          if all nodes in dest.in-edges (not including n) are not visited:
+     *              visit n
+     */
+    shouldVisitCompetingDependency(n, curGroup){
+        let curGroupCopy = curGroup
+        // get all non visited 'or' out-edges of n
+        let nOutEdgesNotVisited = Array.from(this.outEdges.get(n).entries()).filter(x => x[1] === 'or' && this.isVisited.get(x[0]) === false )
+        //console.log(`DEBUG ${n} nOutEdgesNotVisited: ${nOutEdgesNotVisited}`)
+        for (let node of nOutEdgesNotVisited){
+            //console.log(`DEBUG node: ${node}`)
+            for (let inEdge of this.inEdges.get(node[0]).entries()){
+                //console.log(`DEBUG inEdge: ${inEdge}`)
+                if (inEdge[0] != n && inEdge[1] === 'or' && this.isVisited.get(inEdge[0]) === false){
+                    return true
+                }
             }
         }
         return false
@@ -246,21 +248,34 @@ class ClassesGraph{
             console.log(arr)
         }
         //DEBUG
-        console.log('\nOUT EDGE COLORS')
-        for (let i of this.outEdgeColors.keys()){
-            let arr = this.outEdgeColors.get(i)
+        console.log('\nIS VISITED')
+        for (let i of this.isVisited.keys()){
+            let arr = this.isVisited.get(i)
             console.log(`${i}:`)
             console.log(arr)
-            //console.log(`${arr.map(x => x.key+','+x.value )}`)
         }
-        //DEBUG
-        console.log('\nIN EDGE COLORS')
-        for (let i of this.inEdgeColors.keys()){
-            let arr = this.inEdgeColors.get(i)
-            console.log(`${i}:`)
-            console.log(arr)
-            //console.log(`${arr.map(x => x.key+','+x.value )}`)
+
+    }
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    hasNoAndOutEdges(n){
+        let outEdg = this.outEdges.get(n)
+        for (let i of outEdg.keys()){
+            if (outEdg.get(i) === 'and'){
+                return false
+            }
         }
+        return true
+    }
+
+    hasAtLeastOneOrOutEdge(n){
+        let outEdg = this.outEdges.get(n)
+        for (let i of outEdg.keys()){
+            if (outEdg.get(i) === 'or'){
+                return true
+            }
+        }
+        return false
     }
 }
 
@@ -276,22 +291,27 @@ function main(){
     g.addEdge('h','i','and');
     */
     
-    g.addVertex('cs150')
+    g.addEdge('cs150', 'cs250', 'and')
     g.addEdge('math116','cs250','or')
     g.addEdge('math211','cs250','or')
     g.addEdge('cs250', 'cs251', 'and')
     g.addDummyEdge('cs251', ['math116', 'math211'])
     g.addEdge('cs250', 'cs315', 'and')
     g.addDummyEdge('cs315', ['math116', 'math211'])
+    //g.addDummyEdge('cs317', ['math226', 'math221', 'math231'])
+    g.addEdge('cs250', 'cs317', 'and')
 
     console.log('HELLO! WELCOME TO CLASS GRAPH TRAVERSAL.\n')
     
     let i = 1
     console.log(`Semester ${i++}: `)
-    console.log(`${g.visitValidNode()}, ${g.visitValidNode()}, ${g.visitValidNode()}`)
+    console.log(`${g.visitValidNodes(2)}`)
 
-    console.log(`Semester ${i++}: `)
-    console.log(`${g.visitValidNode()}, ${g.visitValidNode()}`)
+    console.log(`\nSemester ${i++}: `)
+    console.log(`${g.visitValidNodes(2)}`)
+
+    console.log(`\nSemester ${i++}: `)
+    console.log(`${g.visitValidNodes(2)}`)
 
     console.log('\nGOODBYE!')
 
