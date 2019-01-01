@@ -82,7 +82,7 @@ class ClassesGraph{
             counter++   // counter placed at beginning of while loop in case 'continue' logic encountered
 
             nextNodeKey = this.getRandomNotVisitedNode()
-            console.log(`DEBUG nextNodeKey: ${nextNodeKey}`)
+            //console.log(`DEBUG nextNodeKey: ${nextNodeKey}`)
             if(nextNodeKey === null){
                 return currentGroup
             }
@@ -94,8 +94,29 @@ class ClassesGraph{
             } 
             else if (this.isValidVisitableNode(nextNodeKey, currentGroup)){
                 //check whether n is a competing dependency
+                let addNextNodeKey = true
 
-                currentGroup.push(nextNodeKey)
+                if (this.hasOrOutEdges(nextNodeKey)){
+                    //console.log(`DEBUG nextNodeKey: ${nextNodeKey}`)
+                    let nextNodeKeyOrOutEdges = Array.from(this.outEdges.get(nextNodeKey).keys())
+                    //nextNodeKeyOrOutEdges = nextNodeKeyOrOutEdges.filter(x => x !== 'or')
+
+                    for (let node of currentGroup){
+                        //console.log(`\tnode: ${node}`)
+                        let nodeOrOutEdges = Array.from(this.outEdges.get(node).keys())
+                        //console.log(`\t\tnextNodeKeyOrOutEdges: ${nextNodeKeyOrOutEdges}`)
+                        //console.log(`\t\tnodeOrOutEdges: ${nodeOrOutEdges}`)
+                        if (this.arraysAreEqual(nextNodeKeyOrOutEdges, nodeOrOutEdges)){
+                            //console.log(`\tArrays are equal`)
+                            addNextNodeKey = false
+                            break
+                        }
+                    }
+                }
+                
+                if(addNextNodeKey){
+                    currentGroup.push(nextNodeKey)
+                }
             }
             counter++
         }
@@ -117,7 +138,7 @@ class ClassesGraph{
         let min = 0;
         let max = arr.length;
         let randIndex = Math.floor(Math.random() * (+max - +min)) + +min;
-        console.log(`DEBUG Random index: ${randIndex}`)
+        //console.log(`DEBUG Random index: ${randIndex}`)
         return arr[randIndex]; 
     }
 
@@ -132,24 +153,38 @@ class ClassesGraph{
 
         // Requirement 1: n has no in-edges and no out-edges
         if (Array.from(this.inEdges.get(node)).length === 0 && Array.from(this.outEdges.get(node)).length === 0){
-            console.log(`DEBUG REQ 1: ${node}`)
+            //console.log(`DEBUG REQ 1: ${node}`)
             return true
         }
         if(this.hasOrOutEdges(node)){
-            console.log(`DEBUG REQ 2: ${node}`)
+            //console.log(`DEBUG REQ 2: ${node}`)
             return this.shouldVisitCompetingDependency(node, curGroupCopy) ? true : false
         }
         // Requirement 3: n has 'and' in-edges (m -> n), all m have been visited
         if (this.hasAndInEdges(node)){
-            console.log(`DEBUG REQ 3: ${node}`)
+            //console.log(`DEBUG REQ 3: ${node}`)
             return this.allAndInEdgesAreVisited(node) ? true : false
         }
         // Requirement 4: n has 'or' in-edges (m -> n) at least one has been visited
         if (this.hasOrInEdges(node)){
-            console.log(`DEBUG REQ 4: ${node}`)
+            //console.log(`DEBUG REQ 4: ${node}`)
             return this.hasAtLeastOneOrVisitedInEdge(node) ? true : false            
         }
 
+        return true
+    }
+
+    arraysAreEqual(n, m){
+        for (let i of n){
+            if (!m.includes(i)){
+                return false
+            }
+        }
+        for (let i of m){
+            if (!n.includes(i)){
+                return false
+            }
+        }
         return true
     }
 
@@ -256,7 +291,6 @@ class ClassesGraph{
         }
 
     }
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
     hasNoAndOutEdges(n){
         let outEdg = this.outEdges.get(n)
@@ -266,16 +300,6 @@ class ClassesGraph{
             }
         }
         return true
-    }
-
-    hasAtLeastOneOrOutEdge(n){
-        let outEdg = this.outEdges.get(n)
-        for (let i of outEdg.keys()){
-            if (outEdg.get(i) === 'or'){
-                return true
-            }
-        }
-        return false
     }
 }
 
@@ -305,6 +329,9 @@ function main(){
     
     let i = 1
     console.log(`Semester ${i++}: `)
+    console.log(`${g.visitValidNodes(2)}`)
+
+    console.log(`\nSemester ${i++}: `)
     console.log(`${g.visitValidNodes(2)}`)
 
     console.log(`\nSemester ${i++}: `)
