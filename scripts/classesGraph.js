@@ -18,14 +18,14 @@ class ClassesGraph{
         this.inEdges = new Map()
         // this.outEdgeColors = new Map()
         // this.inEdgeColors = new Map()
-        this.isVisited = new Map()
+        this.isVisited = new Map() // sorted map
     }
 
     addVertex(u){
         if (!this.outEdges.has(u)){
             this.outEdges.set(u, new Map())
             this.inEdges.set(u, new Map())
-            this.isVisited.set(u, false)    // sorted map
+            this.isVisited.set(u, false)    
         }
     }
 
@@ -97,17 +97,13 @@ class ClassesGraph{
                 let addNextNodeKey = true
 
                 if (this.hasOrOutEdges(nextNodeKey)){
-                    //console.log(`DEBUG nextNodeKey: ${nextNodeKey}`)
+                    // this right now works on the assumption that if a node has 'or' out-edges it will not have 'and' out edges
+                    // need to figure out a way to make the filtering of only 'or' edges work with the arraysAreEqual method
                     let nextNodeKeyOrOutEdges = Array.from(this.outEdges.get(nextNodeKey).keys())
-                    //nextNodeKeyOrOutEdges = nextNodeKeyOrOutEdges.filter(x => x !== 'or')
 
                     for (let node of currentGroup){
-                        //console.log(`\tnode: ${node}`)
                         let nodeOrOutEdges = Array.from(this.outEdges.get(node).keys())
-                        //console.log(`\t\tnextNodeKeyOrOutEdges: ${nextNodeKeyOrOutEdges}`)
-                        //console.log(`\t\tnodeOrOutEdges: ${nodeOrOutEdges}`)
                         if (this.arraysAreEqual(nextNodeKeyOrOutEdges, nodeOrOutEdges)){
-                            //console.log(`\tArrays are equal`)
                             addNextNodeKey = false
                             break
                         }
