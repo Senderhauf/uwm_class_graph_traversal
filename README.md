@@ -10,9 +10,21 @@ With this project, users will be able to enter in a major's courses, specifying 
 
 Please note, this is not a substitute for academic advising as advisors will often know of nuanced contingencies for one's major that are not immediately apparent on paper. Use this software as an ancillary tool to get a feel for where you need to be and verify a courseload with your advisor before enrolling. 
 
-## Run
+## Setup
 
-node ./scripts/classesGraph.js
+npm install 
+
+cd client
+
+npm install
+
+## Run 
+
+npm start
+
+#### NOTE: to run the terminal classesGraph program before the React components are finished try:
+>>node ./scripts/classesGraph.js
+
 
 ## Backlog
 
