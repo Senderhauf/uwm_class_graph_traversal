@@ -21,7 +21,8 @@ node ./scripts/classesGraph.js
 * Create entry form component for courses
 * Connect ratemyprofessor API
 * Analyze Runtime 
-* Refactor getRandomNotVisitedNode() logic to work with sorted isVisited 
+* Refactor to allow node categories of 'necessary'/'non-necessary'
+* Finish maxTypeReached implementation
 
 
 

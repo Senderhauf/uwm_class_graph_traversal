@@ -1,43 +1,21 @@
 {
-  "name": "uwm_class_graph_traversal",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "compile": "webpack",
-    "watch": "webpack --watch",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon -w server server/server.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Senderhauf/uwm_class_graph_traversal.git"
-  },
-  "author": "Hart",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/Senderhauf/uwm_class_graph_traversal/issues"
-  },
-  "homepage": "https://github.com/Senderhauf/uwm_class_graph_traversal#readme",
+  "name": "course-iteration-server",
+  "version": "0.0.1",
+  "private": true,
   "dependencies": {
-    "express": "^4.16.3",
-    "inquirer": "^6.2.1",
-    "mongodb": "^3.1.4"
+    "babel-core": "^6.26.3",
+    "express": "^4.16.4",
+    "mongodb": "3.1.10"
+  },
+  "scripts": {
+    "start": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "node server/server.js",
+    "client": "node start-client.js",
+    "dev": "echo \"This command has been deprecated. Use 'npm start'\" && exit 1",
+    "lint": "eslint ."
   },
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-core": "^6.26.3",
-    "babel-loader": "^8.0.2",
-    "babel-polyfill": "^6.26.0",
-    "babel-preset-react": "^6.24.1",
-    "body-parser": "^1.18.3",
-    "nodemon": "^1.18.4",
-    "open": "0.0.5",
-    "react": "^16.5.0",
-    "react-dom": "^16.5.0",
-    "react-router": "^4.3.1",
-    "webpack": "^4.17.2",
-    "webpack-cli": "^3.1.0",
-    "whatwg-fetch": "^2.0.4"
+    "concurrently": "3.1.0",
+    "open": "0.0.5"
   }
 }

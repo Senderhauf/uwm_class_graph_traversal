@@ -5,7 +5,6 @@
  * This version uses a Map object to track nodes of object value
  */
 
-var inquirer = require('inquirer')
 
 class ClassesGraph{
     constructor(){
@@ -17,40 +16,36 @@ class ClassesGraph{
         this.outEdges = new Map()
         this.inEdges = new Map()
         this.isVisited = new Map() // sorted map
-        this.maxCourseTypes = new Map()
+        this.creditsPerCourse = new Map()
+        this.maxMathCoursesPerSemester = 1
+        this.currentTotalCredits = 0
+        this.currentSemester = 1
     }
 
-    addMaxTypePerGroup(maxNum, type){
-        this.maxCourseTypes.set(type, maxNum)
+    setMaxMathCoursesPerSemester(num){
+        this.maxMathCoursesPerSemester = num 
     }
 
-    addVertex(u){
+    addNode(u, credits){
         if (!this.outEdges.has(u)){
             this.outEdges.set(u, new Map())
             this.inEdges.set(u, new Map())
             this.isVisited.set(u, false)    
+            this.creditsPerCourse.set(u, credits)
         }
     }
 
-    addEdge(u, v, edgeType){
+    addEdge(u, uCredits, v, vCredits, edgeType){
         // add the edge u to all three lists if not in outEdges list
-        if (!this.outEdges.has(u)){
-            this.outEdges.set(u, new Map())
-            this.inEdges.set(u, new Map())
-            this.isVisited.set(u, false)
-        }
+        this.addNode(u, uCredits)
+
         // add the edge v to all three lists if not in outEdges list
-        if (!this.outEdges.has(v)){
-            this.outEdges.set(v, new Map())
-            this.inEdges.set(v, new Map())
-            this.isVisited.set(v, false)
-        }
+        this.addNode(v, vCredits)
+
         // get the current outEdges list for u, add v, and add the new list to preserve it previous adjacency list
         let uOut = this.outEdges.get(u)
-        //if(!u.uOut.has(v)){
-            uOut.set(v, edgeType)
-            this.outEdges.set(u, uOut)
-        //}
+        uOut.set(v, edgeType)
+        this.outEdges.set(u, uOut)
         
         // get the current inEdges list for v, add u, and add the new list to preserve it's previous adjacency list
         let vIn = this.inEdges.get(v)
@@ -58,36 +53,38 @@ class ClassesGraph{
         this.inEdges.set(v, vIn)
     }
 
-    addDummyEdge(dest, arr){
+    addDummyEdge(dest, credits, arr){
         let dummyNode = dest+'dummy'
-        this.addEdge(dummyNode, dest, 'and')
+        this.addEdge(dummyNode, 0, dest, credits, 'and')
         for (let i of arr){
-            this.addEdge(i, dummyNode, 'or')
+            let course = Object.keys(i)[0]
+            let courseCredits = i[Object.keys(i)[0]]
+            this.addEdge(course, courseCredits, dummyNode, 0, 'or')
         }
     }
 
-    visitValidNodes(num){
+    visitValidNodes(numCredits){
         //return null if there are no more valid nodes
-        if (num <= 0){
+        if (numCredits <= 0){
             return null
         }
-
+        this.currentSemester += 1
         let currentGroup = []
-        this.visitValidNodeHelper(currentGroup, num)
+        currentGroup = this.visitValidNodeHelper(currentGroup, numCredits)
         currentGroup.map(x => this.isVisited.set(x, true))
 
         return currentGroup
     }
 
-    visitValidNodeHelper(currentGroup, groupSize){
+    visitValidNodeHelper(currentGroup, numCredits){
         let nextNodeKey
         let counter = 0
+        let currentGroupCredits = 0
 
-        while (counter < 30 && currentGroup.length < groupSize){
-            counter++   // counter placed at beginning of while loop in case 'continue' logic encountered
+        while (counter < 30 && currentGroupCredits < numCredits){
+            counter++ 
 
             nextNodeKey = this.getRandomNotVisitedNode()
-            //console.log(`DEBUG nextNodeKey: ${nextNodeKey}`)
 
             if(nextNodeKey === null || typeof nextNodeKey === 'undefined'){
                 return currentGroup
@@ -98,10 +95,17 @@ class ClassesGraph{
             else if (nextNodeKey.includes('dummy')){
                 this.isVisited.set(nextNodeKey, true)
             } 
+            else if (nextNodeKey.includes('STATUS')){
+                this.setStanding(nextNodeKey)
+            }
             else if (this.isValidVisitableNode(nextNodeKey, currentGroup)){
-                //check whether n is a competing dependency
                 let addNextNodeKey = true
 
+                if (!this.hasMetStandingRequirements(nextNodeKey)){
+                    continue
+                }
+
+                //check whether n is a competing dependency
                 if (this.hasOrOutEdges(nextNodeKey)){
                     // this right now works on the assumption that if a node has 'or' out-edges it will not have 'and' out edges
                     // need to figure out a way to make the filtering of only 'or' edges work with the arraysAreEqual method
@@ -116,12 +120,19 @@ class ClassesGraph{
                     }
                 }
                 
+                if (this.maxMathCoursesPerSemesterReached(nextNodeKey, currentGroup)){
+                    addNextNodeKey = false
+                }
+
                 if(addNextNodeKey){
                     currentGroup.push(nextNodeKey)
+                    currentGroupCredits += this.creditsPerCourse.get(nextNodeKey)
+                    
                 }
             }
         }
 
+        this.currentTotalCredits += currentGroupCredits
         return currentGroup
     }
 
@@ -130,8 +141,10 @@ class ClassesGraph{
      */
     getRandomNotVisitedNode(){
         let arr = Array.from(this.isVisited.keys()).filter(x => this.isVisited.get(x) === false)
-        arr = this.mySort(arr)
+        //arr = this.mySort(arr)
         let min = 0, max
+
+        //console.log(`DEBUG arr: ${arr}`)
 
         if (arr.length == 0){
             return null
@@ -179,6 +192,50 @@ class ClassesGraph{
         return true
     }
 
+    hasMetStandingRequirements(node){
+        let ret = false
+        let sophStandingReqs = Array.from(this.outEdges.get('SOPHMORE STATUS').keys())
+        let juniorStandingReqs = Array.from(this.outEdges.get('JUNIOR STATUS').keys())
+        let seniorStandingReqs = Array.from(this.outEdges.get('SENIOR STATUS').keys())
+        
+        if (sophStandingReqs.includes(node) && this.currentTotalCredits >= 24){
+            ret = true
+        }
+        else if (juniorStandingReqs.includes(node) && this.currentTotalCredits >= 56){
+            ret = true
+        }
+        else if (seniorStandingReqs.includes(node)&& this.currentTotalCredits >= 88){
+            ret = true
+        } 
+        else {
+            ret = true
+        } 
+
+        return ret
+    }
+
+    setStanding(node){
+        switch (node){
+            case 'SOPHMORE STATUS':
+                if(this.currentTotalCredits >= 24){
+                    this.isVisited.set(node, true)
+                }
+                break
+
+            case 'JUNIOR STATUS':
+                if(this.currentTotalCredits >= 56){
+                    this.isVisited.set(node, true)
+                }
+                break
+
+            case 'SENIOR STATUS':
+                if(this.currentTotalCredits >= 88){
+                    this.isVisited.set(node, true)
+                }
+                break
+        }
+    }
+
     arraysAreEqual(n, m){
         for (let i of n){
             if (!m.includes(i)){
@@ -191,6 +248,19 @@ class ClassesGraph{
             }
         }
         return true
+    }
+
+    maxMathCoursesPerSemesterReached(node, currentGroup){
+        let ret = false
+        
+        if(node.includes('MATH')){
+            let curNumberMathCourses = currentGroup.filter(x => x.includes('MATH')).length
+            if(curNumberMathCourses >= this.maxMathCoursesPerSemester){
+                ret = true
+            }
+        }
+        
+        return ret
     }
 
     allAndInEdgesAreVisited(n){
@@ -324,10 +394,11 @@ class ClassesGraph{
         return retArray
     }
 
+    // the following method will be refactored in the future to allow for multiple types of max classes per semester
     maxTypeReached(array, nextNode){
         maxTypes = this.maxCourseTypes.keys()
         for (let type in maxTypes){
-            //if (nextNode.)
+            
         }
     }
 
@@ -371,41 +442,50 @@ class ClassesGraph{
 
 function main(){
     var g = new ClassesGraph();
-    
-    g.addEdge('cs150', 'cs250', 'and')
-    g.addEdge('math116','cs250','or')
-    g.addEdge('math211','cs250','or')
-    g.addEdge('cs250', 'cs251', 'and')
-    g.addDummyEdge('cs251', ['math116', 'math211'])
-    g.addEdge('cs250', 'cs315', 'and')
-    g.addDummyEdge('cs315', ['math116', 'math211'])
-    g.addDummyEdge('cs317', ['math226', 'math221', 'math231'])
-    g.addEdge('cs250', 'cs317', 'and')
-    g.addEdge('cs251', 'cs337', 'and')
-    g.addEdge('cs251', 'cs351', 'and')
-    g.addDummyEdge('cs351', ['math116', 'math211'])
-    g.addEdge('cs351', 'cs361', 'and')
-    g.addEdge('GEREnglish', 'cs361', 'and')
-    //g.addVertex('cs395') // req: sophmore status
-    g.addEdge('cs317', 'cs417', 'and')
-    g.addDummyEdge('cs417', ['math221', 'math232'])
 
+    g.addNode('SOPHMORE STATUS', 0)
+    g.addNode('JUNIOR STATUS', 0)
+    g.addNode('SENIOR STATUS', 0)
+    g.addEdge('CS 150', 3, 'CS 250', 3, 'and')
+    g.addEdge('MATH 116', 3, 'MATH 231', 3, 'and')
+    g.addEdge('MATH 116', 3,'CS 250', 3,'or')
+    g.addEdge('MATH 211', 4,'CS 250', 3,'or')
+    g.addEdge('MATH 231', 4, 'MATH 232', 4, 'and')
+    g.addEdge('CS 250', 3, 'CS 251', 3, 'and')
+    g.addDummyEdge('CS 251', 3, [{'MATH 116':3}, {'MATH 211':4}])
+    g.addEdge('CS 250', 3, 'CS 315', 3, 'and')
+    g.addDummyEdge('CS 315', 3, [{'MATH 116':3}, {'MATH 211':4}])
+    g.addEdge('CS 317', 3, 'MATH 231', 4, 'and')
+    g.addEdge('CS 250', 3, 'CS 317', 3, 'and')
+    g.addEdge('CS 251', 3, 'CS 337', 3, 'and')
+    g.addEdge('CS 251', 3, 'CS 351', 3, 'and')
+    g.addDummyEdge('CS 351', 3, [{'MATH 116':3}, {'MATH 211':4}])
+    g.addEdge('CS 351', 3, 'CS 361', 3, 'and')
+    g.addEdge('GER English', 3, 'CS 361', 3, 'and')
+    g.addEdge('SOPHMORE STATUS', 0, 'CS 395', 3, 'and')
+    g.addEdge('CS 317', 3, 'CS 417', 3, 'and')
+    g.addEdge('CS 417', 3, 'MATH 232', 4, 'and')
+    g.addEdge('JUNIOR STATUS', 0, 'CS 417', 3, 'and')
     //g.debugAdjacencyLists()
 
     console.log('HELLO! WELCOME TO CLASS GRAPH TRAVERSAL.\n')
     
     let i = 1
-    console.log(`Semester ${i++}: `)
-    console.log(`${g.visitValidNodes(4)}`)
+    console.log(`Semester ${g.currentSemester}: `)
+    console.log(`${g.visitValidNodes(18).map(x => ' '+x)}`)
+    console.log(`Total Credits: ${g.currentTotalCredits}`)
 
-    console.log(`\nSemester ${i++}: `)
-    console.log(`${g.visitValidNodes(5)}`)
+    console.log(`\nSemester ${g.currentSemester}: `)
+    console.log(`${g.visitValidNodes(18).map(x => ' '+x)}`)
+    console.log(`Total Credits: ${g.currentTotalCredits}`)
 
-    console.log(`\nSemester ${i++}: `)
-    console.log(`${g.visitValidNodes(5)}`)
+    console.log(`\nSemester ${g.currentSemester}: `)
+    console.log(`${g.visitValidNodes(18).map(x => ' '+x)}`)
+    console.log(`Total Credits: ${g.currentTotalCredits}`)
 
-    console.log(`\nSemester ${i++}: `)
-    console.log(`${g.visitValidNodes(5)}`)
+    console.log(`\nSemester ${g.currentSemester}: `)
+    console.log(`${g.visitValidNodes(18).map(x => ' '+x)}`)
+    console.log(`Total Credits: ${g.currentTotalCredits}`)
 
     console.log('\nGOODBYE!')
 
