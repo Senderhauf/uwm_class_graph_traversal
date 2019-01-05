@@ -2,6 +2,7 @@ const express = require('express');
 const open = require('open');
 const bodyParser = require('body-parser');
 const MongoClient = require('mongodb').MongoClient;
+const mongo = require('mongodb');
 const Courses = require('./courses.js');
 
 let db;
@@ -33,10 +34,9 @@ app.get('/api/courses/', (req, res) => {
     });
 });
 
-
+// modify and update a course
 app.post('/api/courses/', (req, res) => {
     const newCourse = req.body;
-    console.log(newCourse)
     const invalidFormat = Courses.validateCourseFormat(newCourse);
 
     if(invalidFormat) {
@@ -44,18 +44,24 @@ app.post('/api/courses/', (req, res) => {
         return;
     }
 
-    db.collection('comp_sci_courses').updateOne({name:newCourse.name}, { $set: newCourse}, {upsert:true}).then(result => 
-            {
-                console.log(`result upserted id: ${Object.prototype.toString.call(result.upsertedId)}`)
-                db.collection('comp_sci_courses').find({_id: result.upsertedId}).limit(1).next()
+    db.collection('comp_sci_courses').updateOne({name:newCourse.name}, {$set: newCourse}, {upsert:true}).then(result =>
+        {
+            console.log(`modified count: ${result.modifiedCount}`)
+            console.log(`matched count: ${result.matchedCount}`)
+
+            if (!(result.matchedCount === 0 && result.modifiedCount === 0)){
+                throw Error('Course Exists Already')
             }
-    ).then(newCourse => {
-        console.log(`new course: ${newCourse}`)
-        res.json(newCourse);
-    }).catch(error => {
-        console.log(error);
-        res.status(500).json({message: `Internal Server Error: ${error}`});
-    });
+            console.log(`result.upsertedId: ${result.upsertedId._id}`)
+            var o_id = new mongo.ObjectID(result.upsertedId._id)
+            console.log(`objectid: ${o_id}`)
+            return db.collection('comp_sci_courses').find({_id: o_id }).limit(1).next()
+        }
+	).then(newCourse => {
+        console.log(`server newCourse: ${newCourse}`)
+		res.json(newCourse);
+	}).catch(error => {
+		console.log(error);
+		res.status(500).json({message: `Internal Server Error: ${error}`});
+	});
 });
-
-

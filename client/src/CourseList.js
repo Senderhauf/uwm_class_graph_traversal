@@ -1,5 +1,5 @@
 import React from 'react';
-import 'whatwg-fetch';
+import {fetch} from 'whatwg-fetch';
 import {Link} from 'react-router-dom';
 import PropTypes from 'prop-types';
 
@@ -61,7 +61,7 @@ export default class CourseList extends React.Component {
 
 	loadData(){
 		
-		fetch(`/api/courses`).then(response => {
+		fetch(`/api/courses/`).then(response => {
 			if(response.ok){
 				response.json().then(data => {
 					console.log("Total count of records: ", data._metadata.total_count);
@@ -79,16 +79,20 @@ export default class CourseList extends React.Component {
 
 
 	createCourse(newCourse){
-		fetch('/api/courses', {
+		fetch('/api/courses/', {
 			method: 'POST', 
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify(newCourse)
 		}).then(response => {
+			//alert(`response ${JSON.stringify(response)}`)
+			
 			if(response.ok){
-                response.json()
-				.then(updatedCourse => {
+				response.json().then(updatedCourse => {
+					console.log(`createCourse newCourse: ${updatedCourse}`)
 					const newCourses = this.state.courses.concat(updatedCourse);
 					this.setState({courses: newCourses});
+				}).catch(error => {
+					alert(`json error CourseList.js: ${error}`)
 				})
 			}
 			else{
@@ -105,9 +109,9 @@ export default class CourseList extends React.Component {
 		return (
 			<div>
 				<h1>Course Mapper</h1>
-				<CourseTable courses={this.state.courses}/>
-				<hr/>
 				<CourseAdd createCourse={this.createCourse}/>
+				<hr/>
+				<CourseTable courses={this.state.courses}/>				
 			</div>
 		);
 	}
