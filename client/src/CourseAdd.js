@@ -1,5 +1,9 @@
 import React from 'react';
+import Button from '@material-ui/core/Button'
+import Menu from '@material-ui/core/Menu'
+import MenuItem from '@material-ui/core/MenuItem'
 
+/*
 export default class CourseAdd extends React.Component {
 	constructor() {
 		super();
@@ -32,5 +36,56 @@ export default class CourseAdd extends React.Component {
 				</form>
 			</div>
 		)
+	}
+}
+*/
+
+export default class CourseAdd extends React.Component {
+	constructor() {
+		super()
+		this.handleSubmit = this.handleSubmit.bind(this)
+		this.handleClick = this.handleClick.bind(this)
+		this.handleClose = this.handleClose.bind(this)
+		this.state = {anchorE1: null}
+	}
+
+	handleSubmit(event) {
+		event.preventDefault()
+		
+	}
+
+	handleClick = event => {
+		this.setState({anchorE1: event.currentTarget})
+	}
+
+	handleClose = () => {
+		this.setState({ anchorE1: null})
+	}
+
+	render() {
+		const {anchorE1} = this.state
+		return(
+			<div>
+				<div>
+					<Button 
+						id="open-course-type"
+						onClick={this.handleClick}
+					>
+						Course Type
+					</Button>
+					<Menu
+						id="course-type"
+						anchorEl={anchorE1}
+						open={Boolean(anchorE1)}
+						onClose={this.handleClose}
+					>
+						<MenuItem onClick={this.handleClose}>COMPSCI</MenuItem>
+						<MenuItem onClick={this.handleClose}>MATH</MenuItem>
+						<MenuItem onClick={this.handleClose}>GER</MenuItem>
+					</Menu>
+				</div>
+			</div>
+		)
+
 	}
 }
