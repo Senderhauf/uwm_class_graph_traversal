@@ -446,7 +446,7 @@ function main(){
     g.addNode('SOPHMORE STATUS', 0)
     g.addNode('JUNIOR STATUS', 0)
     g.addNode('SENIOR STATUS', 0)
-    g.addEdge('CS 150', 3, 'CS 250', 3, 'and')
+    //g.addEdge('CS 150', 3, 'CS 250', 3, 'and')
     g.addEdge('MATH 116', 3, 'MATH 231', 3, 'and')
     g.addEdge('MATH 116', 3,'CS 250', 3,'or')
     g.addEdge('MATH 211', 4,'CS 250', 3,'or')

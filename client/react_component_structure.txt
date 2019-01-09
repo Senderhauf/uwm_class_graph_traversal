@@ -1,0 +1,102 @@
+
+<App>
+	<BrowserRouter>
+		<Switch>
+			<Route>
+				<CourseList>
+					<CourseAdd>
+						<Button id="open-course-types">
+							Course Type
+						</Button>
+						<Menu id="course-types">
+							...<MenuItem/>
+						</Menu>
+
+					</CourseAdd>
+					<CourseTable>
+						...<CourseRow/>
+					</CourseTable>
+				</CourseList>
+			</Route>
+		</Switch>
+	</BrowserRouter>
+</App>
+
+
+<App>
+	<BrowserRouter>
+		<Switch>
+			<Route>
+
+				<Home>
+					</About>
+				</Home>
+
+				<CourseMap>
+				</CourseMap>
+
+				<CourseList>
+					<CourseAdd>
+						<Select>
+							CourseType
+						</Select>
+						<TextField>
+							CourseNumber
+						</TextField>
+						<Select>
+							Credits
+						</Select>
+					</CourseAdd>
+					<CourseTable>
+						...<CourseRow>
+							<CourseEdit>
+								<Card>
+									CourseType 
+									CourseNumber
+									<Dialog scroll=paper>
+										<PrereqAdd>
+											<PrereqCreate>
+												<Select>
+													CourseType
+												</Select>
+												<TextField>
+													CourseNumber
+												</TextField>
+												<Select>
+													Credits
+												</Select>
+											</PrereqCreate>
+											<PrereqExisting>
+												...<Prereqs>
+													<Chip>
+														CourseType
+														CourseNumber
+														Credits
+														<Button>
+															Remove
+														</Button>
+													</Chip>
+												</Prereqs>
+											</PrereqExisting>
+										</PrereqAdd>
+									</Dialog>
+									...<Prereqs>
+										<Chip>
+											CourseType
+											CourseNumber
+											Credits
+											<Button>
+												Remove
+											</Button>
+										</Chip>
+									</Prereqs>
+								</Card>
+							</CourseEdit>
+						<CourseRow>
+					</CourseTable>
+				</CourseList>
+
+			</Route>
+		</Switch>
+	</BrowserRouter>
+</App>
