@@ -5,12 +5,21 @@ import PropTypes from 'prop-types';
 
 import  CourseAdd from '../CourseAddRoute/CourseAdd.js'
 
+const styles = theme => ({
+	root: {
+	  display: 'flex',
+	  flexWrap: 'wrap',
+	},
+	courseRow: {
+	  margin: theme.spacing.unit,
+	  minWidth: 200,
+	}
+  });
+
 const CourseRow = (props) => (
 	<tr>
-		<td><Link to={`/courses/${props.course._id}`}>{props.course._id.substr(-4)}</Link></td>
-		<td>{props.course.courseType}</td>
-		<td>{props.course.courseValue}</td>
-		<td>{props.course.creditAmount}</td>
+		<td><Link to={`/courses/${props.course._id}`}>{props.course.courseType} {props.course.courseValue}</Link></td>
+		<td className={styles.courseRow}>{props.course.creditAmount}</td>
 		<td>{props.course.prerequisites}</td>
 	</tr>
 );
@@ -18,14 +27,14 @@ const CourseRow = (props) => (
 function CourseTable(props) {
 
 		//const borderedStyle = {border: "1px solid silver", padding:6};
-		const courseRows = props.courses.map(course => <CourseRow key={course._id} course={course}/>);
+		const courseRows = props.courses.map(course => <CourseRow key={course._id} course={course} />);
 
 		return ( 
-			<table className="bordered-table"/*style={{borderCollapse: "collapse"}}*/>
+			
+			<table>
 				<thead>
 					<tr>
-						<th>Course Type</th>
-						<th>Course Value</th>
+						<th>Course</th>
 						<th>Credits</th>
 						<th>Prerequisites</th>
 					</tr>
@@ -48,17 +57,6 @@ export default class CourseList extends React.Component {
 		this.loadData();
 	}
 
-	// componentDidUpdate(prevProps){
-	// 	const oldQuery = prevProps.location.query;
-	// 	const newQuery = this.props.location.query;
-
-	// 	if(oldQuery.status === newQuery.status){
-	// 		return;
-	// 	}
-
-	// 	this.loadData();
-	// }
-
 	loadData(){
 		
 		fetch(`/api/courses/`).then(response => {
@@ -77,14 +75,12 @@ export default class CourseList extends React.Component {
 		});
 	}
 
-
 	createCourse(newCourse){
 		fetch('/api/courses/', {
 			method: 'POST', 
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify(newCourse)
 		}).then(response => {
-			//alert(`response ${JSON.stringify(response)}`)
 			
 			if(response.ok){
 				response.json().then(updatedCourse => {
@@ -108,9 +104,9 @@ export default class CourseList extends React.Component {
 	render() {
 		return (
 			<div>
-				<h1>Course Mapper</h1>
 				<CourseAdd createCourse={this.createCourse}/>
 				<hr/>
+				<h1>Course List</h1>
 				<CourseTable courses={this.state.courses}/>				
 			</div>
 		);

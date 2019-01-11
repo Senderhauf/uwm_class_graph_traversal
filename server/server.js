@@ -44,7 +44,7 @@ app.post('/api/courses/', (req, res) => {
         return;
     }
 
-    db.collection('comp_sci_courses').updateOne({name:newCourse.name}, {$set: newCourse}, {upsert:true}).then(result =>
+    db.collection('comp_sci_courses').updateOne({courseType:newCourse.courseType, courseValue:newCourse.courseValue}, {$set: newCourse}, {upsert:true}).then(result =>
         {
             console.log(`modified count: ${result.modifiedCount}`)
             console.log(`matched count: ${result.matchedCount}`)

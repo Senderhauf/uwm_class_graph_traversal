@@ -8,7 +8,7 @@ export default class CourseMap extends React.Component {
     render(){
         return(
             <div>
-                CourseMap Placeholder
+                <h1>Course Map</h1>
             </div>
         )
     }

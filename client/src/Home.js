@@ -1,11 +1,7 @@
 import React from 'react'
 import {Link} from 'react-router-dom'
 
-const About = () => (
-    <div>
-        About Placeholder
-    </div>
-);
+
 
 
 export default class Home extends React.Component {
@@ -22,7 +18,9 @@ export default class Home extends React.Component {
                     <td><Link to={'/course-add'}>Add A Course</Link></td>
                     <td><Link to={'/courses'}>Courses</Link></td>
                 </tr>
-                <About/>
+                <div>
+                    About Placeholder   
+                </div>
             </div>
         )
     }
