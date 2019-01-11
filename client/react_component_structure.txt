@@ -35,18 +35,22 @@
 				<CourseMap>
 				</CourseMap>
 
+				<CourseAdd>
+					<Select>
+						CourseType
+					</Select>
+					<TextField>
+						CourseNumber
+					</TextField>
+					<Select>
+						Credits
+					</Select>
+					<Button>
+						Add Course
+					</Button>
+				</CourseAdd>
+				
 				<CourseList>
-					<CourseAdd>
-						<Select>
-							CourseType
-						</Select>
-						<TextField>
-							CourseNumber
-						</TextField>
-						<Select>
-							Credits
-						</Select>
-					</CourseAdd>
 					<CourseTable>
 						...<CourseRow>
 							<CourseEdit>
@@ -95,7 +99,6 @@
 						<CourseRow>
 					</CourseTable>
 				</CourseList>
-
 			</Route>
 		</Switch>
 	</BrowserRouter>

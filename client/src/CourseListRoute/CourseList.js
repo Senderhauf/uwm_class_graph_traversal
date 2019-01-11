@@ -3,15 +3,15 @@ import {fetch} from 'whatwg-fetch';
 import {Link} from 'react-router-dom';
 import PropTypes from 'prop-types';
 
-import  CourseAdd from './CourseAdd.js'
+import  CourseAdd from '../CourseAddRoute/CourseAdd.js'
 
 const CourseRow = (props) => (
 	<tr>
 		<td><Link to={`/courses/${props.course._id}`}>{props.course._id.substr(-4)}</Link></td>
-		<td>{props.course.name}</td>
-		<td>{props.course.credits}</td>
+		<td>{props.course.courseType}</td>
+		<td>{props.course.courseValue}</td>
+		<td>{props.course.creditAmount}</td>
 		<td>{props.course.prerequisites}</td>
-		<td>{props.course.difficulty}</td>
 	</tr>
 );
 
@@ -24,10 +24,10 @@ function CourseTable(props) {
 			<table className="bordered-table"/*style={{borderCollapse: "collapse"}}*/>
 				<thead>
 					<tr>
-						<th>Course Name</th>
+						<th>Course Type</th>
+						<th>Course Value</th>
 						<th>Credits</th>
 						<th>Prerequisites</th>
-						<th>Difficulty</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -118,7 +118,8 @@ export default class CourseList extends React.Component {
 }
 
 CourseList.propTypes = {
-	name: PropTypes.object.isRequired, 
-	credits: PropTypes.object.isRequired, 
+	courseType: PropTypes.object.isRequired, 
+	courseValue: PropTypes.object.isRequired, 
+	creditAmount: PropTypes.object.isRequired, 
 	router: PropTypes.object
 }

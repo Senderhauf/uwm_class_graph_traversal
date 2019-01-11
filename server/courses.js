@@ -1,10 +1,10 @@
 'use strict';
 
 const fieldType = {
-    name: 'required', 
-    credits: 'required', 
+    courseType: 'required', 
+    courseValue: 'required',
+    creditAmount: 'required', 
     prereqs: 'optional',
-    difficulty: 'optional'
 }
 
 function validateCourseFormat(course){
