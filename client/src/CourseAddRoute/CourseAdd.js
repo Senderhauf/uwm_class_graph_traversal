@@ -67,9 +67,16 @@ class CourseAdd extends React.Component {
 
 	handleSubmit(event) {
 		event.preventDefault()
-		Object.keys(this.state).map(x => console.log(`${x}: ${this.state[x]}`))
+		//Object.keys(this.state).map(x => console.log(`${x}: ${this.state[x]}`))
 		//TODO
 		this.props.createCourse(this.state)
+
+		this.setState({
+			courseType:'',
+			creditAmount:'',
+			courseValue:''
+		})
+
 	}
 
 	handleChange(event) {
@@ -106,6 +113,7 @@ class CourseAdd extends React.Component {
 						label="Course Value"
 						className={classes.formControl}
 						name="courseValue"
+						value={this.state.courseValue}
 						onChange={this.handleChange}
 					/>
 					<FormControl className={classes.formControl}>
@@ -114,7 +122,6 @@ class CourseAdd extends React.Component {
 							value={this.state.creditAmount}
 							onChange={this.handleChange}
 							input={<Input name="creditAmount" id="credit-amount"/>}
-
 						>
 							<MenuItem value={1}>1</MenuItem>
 							<MenuItem value={2}>2</MenuItem>

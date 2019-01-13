@@ -1,7 +1,9 @@
 import React from 'react'
 import {Link} from 'react-router-dom'
 
+const About = () => (
 
+);
 
 
 export default class Home extends React.Component {

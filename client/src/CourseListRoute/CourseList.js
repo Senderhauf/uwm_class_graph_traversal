@@ -2,48 +2,49 @@ import React from 'react';
 import {fetch} from 'whatwg-fetch';
 import {Link} from 'react-router-dom';
 import PropTypes from 'prop-types';
+import {Card, CardContent, CardActions} from '@material-ui/core'
 
-import  CourseAdd from '../CourseAddRoute/CourseAdd.js'
 
-const styles = theme => ({
-	root: {
-	  display: 'flex',
-	  flexWrap: 'wrap',
-	},
-	courseRow: {
-	  margin: theme.spacing.unit,
-	  minWidth: 200,
-	}
-  });
+import './CourseList.css'
+import CourseAdd from '../CourseAddRoute/CourseAdd.js'
+import Prereqs from './Prereqs.js'
 
-const CourseRow = (props) => (
-	<tr>
-		<td><Link to={`/courses/${props.course._id}`}>{props.course.courseType} {props.course.courseValue}</Link></td>
-		<td className={styles.courseRow}>{props.course.creditAmount}</td>
-		<td>{props.course.prerequisites}</td>
-	</tr>
+const CourseCard = (props) => (
+	// <tr>
+	// 	<td><Link to={`/courses/${props.course._id}`}>{props.course.courseType} {props.course.courseValue}</Link></td>
+	// 	<td className={styles.courseRow}>{props.course.creditAmount}</td>
+	// 	<td>{props.course.prerequisites}</td>
+	// </tr>
+
+	<Card>
+		<CardContent>
+			<Link to={`/courses/${props.course._id}`}>{props.course.courseType} {props.course.courseValue}</Link>
+			<p>{props.course.creditAmount}</p>
+			<Prereqs></Prereqs>
+
+		</CardContent>
+	</Card>
 );
 
 function CourseTable(props) {
 
 		//const borderedStyle = {border: "1px solid silver", padding:6};
-		const courseRows = props.courses.map(course => <CourseRow key={course._id} course={course} />);
+		const sortedCourses = Array.from(props.courses).sort(compare).sort((a, b) => {return a.courseValue - b.courseValue})
+		const courseRows = sortedCourses.map(course => <div className="column"><CourseCard classname="card" key={course._id} course={course} /></div>);
 
 		return ( 
-			
-			<table>
-				<thead>
-					<tr>
-						<th>Course</th>
-						<th>Credits</th>
-						<th>Prerequisites</th>
-					</tr>
-				</thead>
-				<tbody>
-					{courseRows}
-				</tbody>
-			</table>
+			<div className="row">
+				{courseRows}
+			</div>
 		);
+}
+
+function compare(a,b) {
+	if (a.courseType < b.courseType)
+    	return -1;
+  	if (a.courseType > b.courseType)
+    	return 1;
+  	return 0;
 }
 
 export default class CourseList extends React.Component {
