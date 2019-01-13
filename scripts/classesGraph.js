@@ -367,7 +367,7 @@ class ClassesGraph{
 
     }
 
-    hasNoAndOutEdges(n){
+    hasNoAndOutEdges(n){    
         let outEdg = this.outEdges.get(n)
         for (let i of outEdg.keys()){
             if (outEdg.get(i) === 'and'){
@@ -438,6 +438,32 @@ class ClassesGraph{
 
         return count >= max
     }
+    
+    /**
+     * Exports the data in isVisited Map and outEdges Map into Objects to be used as json data for graph.html
+     */
+    exportData(){
+        let isVisitedExport = []
+        for (let i of this.isVisited.keys()){
+            isVisitedExport.push({name:i, status:this.isVisited.get(i)})
+        }
+
+        console.log()
+        let outEdgesExport = []
+        for (let i of this.outEdges.keys()){
+            let edges = this.outEdges.get(i)
+            for (let j of edges.keys()){
+                outEdgesExport.push(
+                    {
+                        source: isVisitedExport.findIndex(x => x.name === i), 
+                        target: isVisitedExport.findIndex(x => x.name === j), 
+                        type: edges.get(j)
+                    })   
+            }
+        }
+
+        return {isVisitedExport, outEdgesExport}
+    }
 }
 
 function main(){
@@ -489,7 +515,7 @@ function main(){
 
     console.log('\nGOODBYE!')
 
-    //g.debugAdjacencyLists()
+    console.log(g.exportData())
 }
 
 main();
