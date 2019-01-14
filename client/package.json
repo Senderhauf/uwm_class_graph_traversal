@@ -5,6 +5,8 @@
   "proxy": "http://localhost:3033/",
   "dependencies": {
     "@material-ui/core": "^3.8.2",
+    "d3-force": "2.0.0",
+    "d3-scale": "2.1.2",
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
     "react-router-dom": "4.3.1",
