@@ -137,6 +137,7 @@
         edgelabels.attr('transform', function (d) {
             if (d.target.x < d.source.x) {
                 var bbox = this.getBBox();
+                console.log(this)
 
                 rx = bbox.x + bbox.width / 2;
                 ry = bbox.y + bbox.height / 2;

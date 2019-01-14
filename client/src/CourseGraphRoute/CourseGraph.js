@@ -3,6 +3,8 @@ import * as d3 from 'd3'
 import {select} from 'd3-selection'
 import {attrs} from 'd3-selection-multi'
 import './CourseGraph.css'
+import {ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails} from '@material-ui/core'
+import {ExpandMore} from '@material-ui/icons/ExpandMore'
 
 export default class CourseGraph extends React.Component {
 
@@ -13,30 +15,28 @@ export default class CourseGraph extends React.Component {
     }
 
     createGraph() {
-        var node = this.node
+        let node = this.node
         
-        select(node) //error here somehow
-            .append('defs')
-            .append('marker')
-            .append('svg:path')
+
+        select(node)
+            .selectAll('svg:path')
             .attr('d', 'M 0,-5 L 10 ,0 L 0,5')
-            .attr('fill', '#999')
-            .style('stroke','none');
+            
     
         let simulation = d3.forceSimulation()
-            .force("link", d3.forceLink().id(function (d) {return d.id;}).distance(100).strength(1))
+            .force("link", d3.forceLink().id(function (d) {return d.id;}).distance(200).strength(1))
             .force("charge", d3.forceManyBody())
             .force("center", d3.forceCenter(this.props.width / 2, this.props.height / 2));
-        
+        console.log(`${this.props.width / 2} ${this.props.height / 2}`)
         //TODO connect http://localhost:3033/api/graphdata to mongodb 
         d3.json("/graph.json").then((graph) => {
-            console.log(graph)
             this.update(graph.links, graph.nodes, simulation);
         }).catch(error => console.log(error))
     }
 
     update(links, nodes, simulation) {
         var colors = d3.scaleOrdinal(d3.schemeCategory10);
+        var rx, ry
         let node = this.node
         let link = select(node)
             .selectAll(".link")
@@ -106,7 +106,7 @@ export default class CourseGraph extends React.Component {
             );
 
         curNode.append("circle")
-            .attr("r", 5)
+            .attr("r", 10)
             .style("fill", function (d, i) {return colors(i);})
 
         curNode.append("title")
@@ -133,11 +133,12 @@ export default class CourseGraph extends React.Component {
                     return 'M ' + d.source.x + ' ' + d.source.y + ' L ' + d.target.x + ' ' + d.target.y;
                 });
 
-                edgelabels.attr('transform', function (d) {
+                edgelabels.attr('transform', function (d, i) {
                     if (d.target.x < d.source.x) {
-                        var bbox = node.getBBox();
-                        let rx = bbox.x + (bbox.width / 2);
-                        let ry = bbox.y + (bbox.height / 2);
+                        let curEdgeLabel = select('#edgelabel'+String(i)).node()
+                        let bbox = curEdgeLabel.getBBox();
+                        rx = bbox.x + bbox.width / 2;
+                        ry = bbox.y + bbox.height / 2;
                         return 'rotate(180 ' + rx + ' ' + ry + ')';
                     }
                     else {
@@ -155,20 +156,36 @@ export default class CourseGraph extends React.Component {
         this.createGraph()
 
         return(
-            <svg    
-                ref={node => this.node = node} 
-                width={width} 
-                height={height} 
-                viewBox={`0, 0, ${width}, ${height}`}
-                id={'arrowhead'}
-                refX={13}
-                refY={0}
-                orient={'auto'}
-                markerWidth={13}
-                markerHeight={13}
-                xoverflow={'visible'}
-            >
-            </svg>
+            <div>
+                <ExpansionPanel>
+                    <ExpansionPanelSummary expandIcon={<ExpandMore/>}>
+                        <h1>Course Graph</h1>
+                    </ExpansionPanelSummary>
+                    <ExpansionPanelDetails>
+                        <svg    
+                        ref={node => this.node = node} 
+                        width={width} 
+                        height={height} 
+                        >
+                            <defs>
+                                <marker
+                                    viewBox={`-0 -5 10 10`}
+                                    id={'arrowhead'}
+                                    refX={13}
+                                    refY={0}
+                                    orient={'auto'}
+                                    markerWidth={13}
+                                    markerHeight={13}
+                                    xoverflow={'visible'}
+                                >
+                                    <path fill={'#999'} style={{stroke: "none"}} d={'M 0,-5 L 10 ,0 L 0,5'}></path>
+                                </marker>
+                            </defs>
+                        </svg>
+                    </ExpansionPanelDetails>
+                    
+                </ExpansionPanel>
+            </div>
         )
     }
 }
