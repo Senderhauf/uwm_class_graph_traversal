@@ -24,7 +24,7 @@ export default class CourseGraph extends React.Component {
             
     
         let simulation = d3.forceSimulation()
-            .force("link", d3.forceLink().id(function (d) {return d.id;}).distance(200).strength(1))
+            .force("link", d3.forceLink().id(function (d) {return d.id;}).distance(200).strength(2))
             .force("charge", d3.forceManyBody())
             .force("center", d3.forceCenter(this.props.width / 2, this.props.height / 2));
         //TODO connect http://localhost:3033/api/graphdata to mongodb 

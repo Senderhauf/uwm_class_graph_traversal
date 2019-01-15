@@ -35,10 +35,9 @@ export default class CurrentPrereqs extends React.Component {
     }
     
     render() {
-        console.log(this.state.prereqs)
         return(
             <div>
-                <CourseGroup prereqs={this.state.prereqs}/>
+                <CourseGroup prereqs={this.state.prereqs} deletable={true}/>
             </div>
         )
     }

@@ -2,6 +2,7 @@ import React from 'react';
 import {Button, Dialog, DialogContent, DialogActions, DialogTitle, withMobileDialog} from '@material-ui/core'
 import {AppBar, Tabs, Tab, Typography} from '@material-ui/core'
 import CurrentPreqs from './CurrentPrereqs.js'
+import AddSinglePrereq from './AddSinglePrereq.js'
 
 const TabContainer = (props) => (
     <Typography component="div" style={{ padding: 8 * 3 }}>
@@ -61,7 +62,7 @@ export default class Prereqs extends React.Component{
                             </Tabs>
                             </AppBar>
                             {this.state.value === 0 && <CurrentPreqs course={this.props.course}/>}
-                            {this.state.value === 1 && <div>Add Single</div>}
+                            {this.state.value === 1 && <AddSinglePrereq course={this.props.course}/>}
                             {this.state.value === 2 && <div>Add OR Group</div>}
                         </div>
                     </DialogContent>
