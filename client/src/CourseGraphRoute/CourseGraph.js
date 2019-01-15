@@ -4,7 +4,7 @@ import {select} from 'd3-selection'
 import {attrs} from 'd3-selection-multi'
 import './CourseGraph.css'
 import {ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails} from '@material-ui/core'
-import {ExpandMore} from '@material-ui/icons/ExpandMore'
+import {ExpandMore} from '@material-ui/icons'
 
 export default class CourseGraph extends React.Component {
 
@@ -27,7 +27,6 @@ export default class CourseGraph extends React.Component {
             .force("link", d3.forceLink().id(function (d) {return d.id;}).distance(200).strength(1))
             .force("charge", d3.forceManyBody())
             .force("center", d3.forceCenter(this.props.width / 2, this.props.height / 2));
-        console.log(`${this.props.width / 2} ${this.props.height / 2}`)
         //TODO connect http://localhost:3033/api/graphdata to mongodb 
         d3.json("/graph.json").then((graph) => {
             this.update(graph.links, graph.nodes, simulation);
@@ -129,7 +128,6 @@ export default class CourseGraph extends React.Component {
                     .attr("transform", function (d) {return "translate(" + d.x + ", " + d.y + ")";});
 
                 edgepaths.attr('d', function (d) {
-                    //console.log('M ' + d.source.x + ' ' + d.source.y + ' L ' + d.target.x + ' ' + d.target.y)
                     return 'M ' + d.source.x + ' ' + d.source.y + ' L ' + d.target.x + ' ' + d.target.y;
                 });
 
@@ -152,13 +150,13 @@ export default class CourseGraph extends React.Component {
     } 
 
     render(){
+
         const {width, height} = this.props
         this.createGraph()
-
         return(
             <div>
                 <ExpansionPanel>
-                    <ExpansionPanelSummary expandIcon={<ExpandMore/>}>
+                    <ExpansionPanelSummary expandIcon={<ExpandMore />}>
                         <h1>Course Graph</h1>
                     </ExpansionPanelSummary>
                     <ExpansionPanelDetails>

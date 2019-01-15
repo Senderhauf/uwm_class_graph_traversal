@@ -7,28 +7,19 @@ import {Card, CardContent, CardActions} from '@material-ui/core'
 
 import './CourseList.css'
 import CourseAdd from '../CourseAddRoute/CourseAdd.js'
-import Prereqs from './Prereqs.js'
+import PrereqsDialog from './PrereqsDialog.js'
 
 const CourseCard = (props) => (
-	// <tr>
-	// 	<td><Link to={`/courses/${props.course._id}`}>{props.course.courseType} {props.course.courseValue}</Link></td>
-	// 	<td className={styles.courseRow}>{props.course.creditAmount}</td>
-	// 	<td>{props.course.prerequisites}</td>
-	// </tr>
-
 	<Card>
 		<CardContent>
 			<Link to={`/courses/${props.course._id}`}>{props.course.courseType} {props.course.courseValue}</Link>
 			<p>{props.course.creditAmount}</p>
-			<Prereqs></Prereqs>
-
+			<PrereqsDialog course={props.course}></PrereqsDialog>
 		</CardContent>
 	</Card>
 );
 
 function CourseTable(props) {
-
-		//const borderedStyle = {border: "1px solid silver", padding:6};
 		const sortedCourses = Array.from(props.courses).sort(compare).sort((a, b) => {return a.courseValue - b.courseValue})
 		const courseRows = sortedCourses.map(course => <div className="column"><CourseCard classname="card" key={course._id} course={course} /></div>);
 
@@ -108,7 +99,7 @@ export default class CourseList extends React.Component {
 				<CourseAdd createCourse={this.createCourse}/>
 				<hr/>
 				<h1>Course List</h1>
-				<CourseTable courses={this.state.courses}/>				
+				<CourseTable courses={this.state.courses} loadData={this.loadData}/>				
 			</div>
 		);
 	}

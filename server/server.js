@@ -34,6 +34,16 @@ app.get('/api/courses/', (req, res) => {
     });
 });
 
+app.get(`/api/courses/type/:courseType/value/:courseValue`, (req, res) => {
+    db.collection('comp_sci_courses').find({courseType:req.params.courseType, courseValue: req.params.courseValue}).toArray().then(courses => {
+        const metadata = { total_count: courses.length };
+        res.json({ _metadata: metadata, records:courses})
+    }).catch(error => {
+        console.log(error);
+        res.status(500).json({ message: `Internal Server Error: ${error}`});
+    });
+});
+
 // modify and update a course
 app.post('/api/courses/', (req, res) => {
     const newCourse = req.body;

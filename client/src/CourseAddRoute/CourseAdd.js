@@ -61,14 +61,13 @@ class CourseAdd extends React.Component {
 		this.state = {
 			courseType:'',
 			creditAmount:'',
-			courseValue:''
+			courseValue:'', 
+			prereqs:[]
 		}
 	}
 
 	handleSubmit(event) {
 		event.preventDefault()
-		//Object.keys(this.state).map(x => console.log(`${x}: ${this.state[x]}`))
-		//TODO
 		this.props.createCourse(this.state)
 
 		this.setState({
@@ -81,12 +80,10 @@ class CourseAdd extends React.Component {
 
 	handleChange(event) {
 		this.setState({[event.target.name]: event.target.value})
-		//console.log(`${event.target.name}: ${event.target.value}`)
 	}
 
 	render() {
 		const {classes} = this.props
-
 		return(
 			<div>
 				<h1>Course Add</h1>
