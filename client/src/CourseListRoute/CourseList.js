@@ -68,6 +68,7 @@ export default class CourseList extends React.Component {
 	}
 
 	createCourse(newCourse){
+		console.log(`createCourse newCourse: ${JSON.stringify(newCourse)}`)
 		fetch('/api/courses/', {
 			method: 'POST', 
 			headers: { 'Content-Type': 'application/json' },

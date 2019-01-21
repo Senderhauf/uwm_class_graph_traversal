@@ -5,9 +5,9 @@ import CourseGroup from './CourseGroup.js'
 export default class CurrentPrereqs extends React.Component {
     constructor(props) {
         super(props)
-        
+        this.handleDelete = this.handleDelete.bind(this)
         this.state = {
-            prereqs: null
+            prereqs: []
         }
     }
 
@@ -33,11 +33,16 @@ export default class CurrentPrereqs extends React.Component {
 			alert("Error in fetching data from server:", err);
 		});
     }
+
+    handleDelete(prereqToDelete) {
+        console.log(`Delete ${JSON.stringify(prereqToDelete)} \nFrom ${JSON.stringify(this.props.course)}`)
+        alert('handleDelete called')
+    }
     
     render() {
         return(
             <div>
-                <CourseGroup prereqs={this.state.prereqs} deletable={true}/>
+                <CourseGroup prereqs={this.state.prereqs} deletable={true} handleClick={this.handleDelete}/>
             </div>
         )
     }

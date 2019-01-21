@@ -2,17 +2,21 @@ import React from 'react'
 import CourseGroup from './CourseGroup.js'
 
 function PrereqTable(props) {
-
-    console.log(`currentPrereqs: ${JSON.stringify(props.currentPrereqs)}`)
-    console.log(`allCourses: ${JSON.stringify(props.allCourses)}`)
+    let allCourses = props.allCourses.filter(course => 
+        !(
+            course.courseType === props.currentCourse.courseType &&
+            course.courseValue === props.currentCourse.courseValue
+        )
+    )
     // filter out the 'OR' prerequisites
     let currentPrereqsArr = Array.from(props.currentPrereqs).filter(prereq => prereq.or == null)
-    console.log(`currentPrereqsArr: ${currentPrereqsArr}`)
-    //this.setState({availableCourses:Array.from(this.props.allCourses).filter(course => currentPrereqsArr.includes(course) === false) })
-
+    
     return (
         <div>
-            <CourseGroup prereqs={Array.from(props.allCourses).filter(course => currentPrereqsArr.includes(course) === false)} deletable={false}/>
+            <CourseGroup 
+                prereqs={Array.from(allCourses).filter(course => currentPrereqsArr.includes(course) === false && course !== props.currentCourse)} 
+                deletable={false} 
+                handleClick={props.handleClick}/>
         </div>
     ) 
 }
@@ -20,6 +24,7 @@ function PrereqTable(props) {
 export default class AddSinglePrereq extends React.Component {
     constructor(props){
         super(props)
+        this.handleAdd = this.handleAdd.bind(this)
         this.state = {
             availableCourses: [],
             allCourses: [], 
@@ -32,7 +37,6 @@ export default class AddSinglePrereq extends React.Component {
 	}
 
 	loadData(){
-        
         // get all courses
 		fetch(`/api/courses/`).then(response => {
 			if(response.ok){
@@ -65,22 +69,20 @@ export default class AddSinglePrereq extends React.Component {
 			alert("Error in fetching data from server:", err);
         });
     }
-    
-    findAvailablePrereqs(){
-        console.log(`currentPrereqs: ${JSON.stringify(this.state.currentPrereqs)}`)
-        console.log(`allCourses: ${JSON.stringify(this.state.allCourses)}`)
-        // filter out the 'OR' prerequisites
-        let currentPrereqsArr = Array.from(this.state.currentPrereqs).filter(prereq => prereq.or == null)
-        console.log(`currentPrereqsArr: ${currentPrereqsArr}`)
-        this.setState({availableCourses:Array.from(this.state.allCourses).filter(course => currentPrereqsArr.includes(course) === false) })
+
+    /**
+     *  handle the addition of single prerequisite - insert prerequisite with unique id as well
+     *  use uniqid to create  prereqID 
+     */
+    handleAdd(prereqToAdd){
+        alert('handleAdd called')
+        console.log(`Add ${JSON.stringify(prereqToAdd)} \nTo ${JSON.stringify(this.props.course)}`)
     }
 
     render(){
-        
-        
         return(
             <div>
-                <PrereqTable allCourses={this.state.allCourses} currentPrereqs={this.state.currentPrereqs}/>
+                <PrereqTable currentCourse={this.props.course} allCourses={this.state.allCourses} currentPrereqs={this.state.currentPrereqs} handleClick={this.handleAdd}/>
             </div>
         )
     }

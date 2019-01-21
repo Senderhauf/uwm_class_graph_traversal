@@ -1,8 +1,8 @@
 {
-  "name": "cs_course_iterations",
+  "name": "front-end-server",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://localhost:3033/",
+  "proxy": "http://0.0.0.0:3033/",
   "dependencies": {
     "@material-ui/core": "^3.8.2",
     "d3-force": "2.0.0",

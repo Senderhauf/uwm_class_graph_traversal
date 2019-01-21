@@ -1,7 +1,8 @@
 {
-  "name": "course-iteration-server",
+  "name": "courses_server",
   "version": "0.0.1",
   "private": true,
+  "main":"server.js",
   "dependencies": {
     "@material-ui/core": "^3.8.3",
     "@material-ui/icons": "^3.0.2",

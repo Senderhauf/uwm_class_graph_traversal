@@ -1,0 +1,68 @@
+{
+   "_metadata" : {
+      "total_count" : 4
+   },
+   "records" : [
+      {
+         "_id" : "5c3faf874b52950ff69fbc20",
+         "creditAmount" : 1,
+         "prereqs" : [],
+         "courseValue" : "1",
+         "courseType" : "MATH"
+      },
+      {
+         "courseType" : "COMPSCI",
+         "courseValue" : "1",
+         "prereqs" : [],
+         "creditAmount" : 1,
+         "_id" : "5c3faf934b52950ff69fbc26"
+      },
+      {
+         "_id" : "5c3faf9a4b52950ff69fbc2a",
+         "prereqs" : [],
+         "creditAmount" : 1,
+         "courseType" : "ELECENG",
+         "courseValue" : "1"
+      },
+      {
+         "courseType" : "BIOSCI",
+         "courseValue" : "1",
+         "prereqs" : [
+            {
+               "_id" : "5c3faf9a4b52950ff69fbc2a",
+               "creditAmount" : 1,
+               "prereqs" : [],
+               "courseType" : "ELECENG",
+               "courseValue" : "1"
+            },
+            {
+               "or" : [
+                  {
+                     "_id" : "5c3faf934b52950ff69fbc26",
+                     "courseType" : "COMPSCI",
+                     "courseValue" : "1",
+                     "creditAmount" : 1,
+                     "prereqs" : []
+                  },
+                  {
+                     "prereqs" : [],
+                     "creditAmount" : 1,
+                     "courseType" : "MATH",
+                     "courseValue" : "1",
+                     "_id" : "5c3fac4e4b52950ff69fbb11"
+                  },
+                  {
+                     "_id" : "5c3fac554b52950ff69fbb16",
+                     "creditAmount" : 1,
+                     "prereqs" : [],
+                     "courseType" : "MATH",
+                     "courseValue" : "2"
+                  }
+               ]
+            }
+         ],
+         "creditAmount" : 1,
+         "_id" : "5c3fafa24b52950ff69fbc2f"
+      }
+   ]
+}

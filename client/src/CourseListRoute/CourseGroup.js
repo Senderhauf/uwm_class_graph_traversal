@@ -6,23 +6,8 @@ export default class CourseGroup extends React.Component {
         super(props)
     }
 
-    handleDelete() {
-        alert('You clicked the delete icon.')
-    }
-
-    handleAdd() {
-        alert('You clicked the add icon')
-    }
-
-    /**
-     * Add clicked chip to prerequisite group if not already added
-     */
-    handleClick() {
-        alert('You clicked the chip.')
-    }
-
     render() {
-        let courseChips, deletable 
+        let courseChips
         
 
         if (this.props.prereqs == null){
@@ -30,10 +15,10 @@ export default class CourseGroup extends React.Component {
         }
         else {
             if(this.props.deletable){
-                courseChips = this.props.prereqs.map(course => <DeletableCourseChip key={course._id} course={course} onDelete={this.handleDelete}/>)
+                courseChips = this.props.prereqs.map((course,i) => <DeletableCourseChip key={i} course={course} onDelete={this.props.handleClick}/>)
             }
             else {
-                courseChips = this.props.prereqs.map(course => <AddableCourseChip key={course._id} course={course} onDelete={this.handleDelete}/>)
+                courseChips = this.props.prereqs.map((course,i) => <AddableCourseChip key={i} course={course} onDelete={this.props.handleClick}/>)
             }
         }
         return(
