@@ -515,7 +515,7 @@ function main(){
 
     console.log('\nGOODBYE!')
 
-    console.log(g.exportData())
+    //console.log(g.exportData())
 }
 
 main();
