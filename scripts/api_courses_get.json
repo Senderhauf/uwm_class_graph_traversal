@@ -69,3 +69,5 @@
 
 
 { "_id" : "5c3faf874b52950ff69fbc20", "creditAmount" : 1, "prereqs" : [], "courseValue" : "1", "courseType" : "MATH" }
+
+{ "creditAmount" : 1, "courseType" : "MATH", "_id" : "5c5246bc15e8fcf264eab645", "courseValue" : "2", "prereqs" : [] }
