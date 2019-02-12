@@ -1,47 +1,52 @@
 {
     "nodes": [
       {
-        "name": "Peter",
-        "label": "Person",
+        "name": "CS 250",
+        "label": "250",
         "id": 1
       },
       {
-        "name": "Michael",
-        "label": "Person",
+        "name": "MATH 116",
+        "label": "116",
         "id": 2
       },
       {
-        "name": "Neo4j",
-        "label": "Database",
+        "name": "MATH 211",
+        "label": "211",
         "id": 3
       },
       {
-        "name": "Graph Database",
-        "label": "Database",
+        "name":"DUMMY CS 250", 
+        "label":"CS 250",
         "id": 4
+      }, 
+      {
+        "name": "CS 251",
+        "label": "251",
+        "id": 5
       }
     ],
     "links": [
       {
-        "source": 1,
-        "target": 2,
-        "type": "KNOWS",
-        "since": 2010
-      },
-      {
-        "source": 1,
-        "target": 3,
-        "type": "FOUNDED"
-      },
-      {
         "source": 2,
-        "target": 3,
-        "type": "WORKS_ON"
+        "target": 4,
+        "type": "OR",
+        "since": 2010
       },
       {
         "source": 3,
         "target": 4,
-        "type": "IS_A"
+        "type": "OR"
+      },
+      {
+        "source": 4,
+        "target": 1,
+        "type": "AND"
+      },
+      {
+        "source": 1,
+        "target": 5,
+        "type": "AND"
       }
     ]
   }

@@ -22,6 +22,8 @@ export default class Prereqs extends React.Component{
         }
     }
 
+
+
     handleClickOpen = () => {
         this.setState({open: true})
     }

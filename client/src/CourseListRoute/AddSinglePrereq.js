@@ -11,10 +11,33 @@ function PrereqTable(props) {
     // filter out the 'OR' prerequisites
     let currentPrereqsArr = Array.from(props.currentPrereqs).filter(prereq => prereq.or == null)
     
+
+    console.log(`CURRENTPREREQS: ${currentPrereqsArr[0]}`)
+    if(typeof currentPrereqsArr[0] !== 'undefined')
+    Object.keys(currentPrereqsArr[0]).map(x => console.log(`\t${x}: ${currentPrereqsArr[0][x]}`))
+
+    console.log(`ALLCOURSES: ${allCourses[0]}`)
+    if(typeof allCourses[0] !== 'undefined')
+    Object.keys(allCourses[0]).map(x => console.log(`\t${x}: ${allCourses[0][x]}`))
+
+    let passedPrereqs = allCourses.filter(course => {
+        if ( currentPrereqsArr.filter(x => x.courseType === course.courseType && x.courseValue === course.courseValue).length == 0){
+            return true
+        }
+        else {
+            return false
+        }
+        
+    })
+
+    console.log(`PREREQS PASSED AS PROP TO COURSEGROUP: `)
+    if(typeof passedPrereqs[0] !== 'undefined')
+    Object.keys(passedPrereqs[0]).map(x => console.log(`\t${x}: ${passedPrereqs[0][x]}`))
+    
     return (
         <div>
             <CourseGroup 
-                prereqs={Array.from(allCourses).filter(course => currentPrereqsArr.includes(course) === false && course !== props.currentCourse)} 
+                prereqs={passedPrereqs} 
                 deletable={false} 
                 handleClick={props.handleClick}/>
         </div>
@@ -26,7 +49,6 @@ export default class AddSinglePrereq extends React.Component {
         super(props)
         this.handleAdd = this.handleAdd.bind(this)
         this.state = {
-            availableCourses: [],
             allCourses: [], 
             currentPrereqs: []
         }
@@ -36,12 +58,20 @@ export default class AddSinglePrereq extends React.Component {
 		this.loadData();
 	}
 
+    // componentDidUpdate(prevProps, prevState){
+    //     //console.log(`RERENDER PRECONDITIONAL: ${this.state.currentPrereqs.length} !== ${prevState.currentPrereqs.length}`)
+    //     if(this.state.currentPrereqs.length !== prevState.currentPrereqs.length){
+    //         //console.log('RERENDERING')
+    //         this.loadData();
+    //     }
+    // }
+
 	loadData(){
         // get all courses
 		fetch(`/api/courses/`).then(response => {
 			if(response.ok){
 				response.json().then(data => {
-                    console.log("Total count of records: ", data._metadata.total_count);
+                    console.log("Total count of courses: ", data._metadata.total_count);
                     this.setState({allCourses: data.records})
 				});
 			} else {
@@ -57,7 +87,7 @@ export default class AddSinglePrereq extends React.Component {
         fetch(`/api/courses/type/${this.props.course.courseType}/value/${this.props.course.courseValue}`).then(response => {
             if(response.ok){
 				response.json().then(data => {
-                    console.log("Total count of records: ", data._metadata.total_count);
+                    console.log("Total count of prereqs: ", data._metadata.total_count);
 					this.setState({currentPrereqs: data.records})
 				});
 			} else {
@@ -75,8 +105,22 @@ export default class AddSinglePrereq extends React.Component {
      *  use uniqid to create  prereqID 
      */
     handleAdd(prereqToAdd){
-        alert('handleAdd called')
         console.log(`Add ${JSON.stringify(prereqToAdd)} \nTo ${JSON.stringify(this.props.course)}`)
+
+        fetch(`/api/courses/addpreq/type/${this.props.course.courseType}/value/${this.props.course.courseValue}/`, {
+            method: 'POST', 
+            headers: {'Content-Type': 'application/json'}, 
+            body: JSON.stringify(prereqToAdd)
+        }).then(response => {
+            if(response.ok){
+                let newCurrentPrereqs = this.state.currentPrereqs+prereqToAdd
+                console.log(`UPDATED STATE PREREQS: ${JSON.stringify(newCurrentPrereqs)}`)
+                console.log(`UPDATED STATE PREREQS.LENGTH: ${newCurrentPrereqs.length}`)
+                this.setState({currentPrereqs: newCurrentPrereqs})
+            }
+        }).catch(error => {
+            console.log(`Error in handleAdd: ${error.message}`)
+        })
     }
 
     render(){

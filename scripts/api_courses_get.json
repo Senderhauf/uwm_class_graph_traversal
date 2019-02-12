@@ -70,4 +70,10 @@
 
 { "_id" : "5c3faf874b52950ff69fbc20", "creditAmount" : 1, "prereqs" : [], "courseValue" : "1", "courseType" : "MATH" }
 
-{ "creditAmount" : 1, "courseType" : "MATH", "_id" : "5c5246bc15e8fcf264eab645", "courseValue" : "2", "prereqs" : [] }
+{ "creditAmount" : 1, "courseType" : "MATH", "_id" : "5c5246bc15e8fcf264eab645", "courseValue" : "1", "prereqs" : [] }
+
+
+
+[{"_id":"5c3faf9a4b52950ff69fbc2a","courseType":"ELECENG","courseValue":"1","creditAmount":1,"prereqs":[]},{"_id":"5c3faf9a4b52950ff69fb45a","courseType":"PHYSICS","courseValue":"1","creditAmount":1,"prereqs":[]},{"or":[{"_id":"5c3faf934b52950ff69fbc26","courseType":"COMPSCI","courseValue":"1","creditAmount":1,"prereqs":[]},{"_id":"5c3fac4e4b52950ff69fbb11","courseType":"MATH","courseValue":"1","creditAmount":1,"prereqs":[]},{"_id":"5c3fac554b52950ff69fbb16","courseType":"MATH","courseValue":"2","creditAmount":1,"prereqs":[]}]}]
+
+Data.filter(item => (item.or == null && !(item.courseType === 'MATH' && item.courseValue === '1'))  ||  (item.or != null && item.or.filter(x => x.courseType === 'MATH' && x.courseValue === '1').length === 0))
