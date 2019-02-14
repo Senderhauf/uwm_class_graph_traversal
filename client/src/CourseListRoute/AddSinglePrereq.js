@@ -10,15 +10,6 @@ function PrereqTable(props) {
     )
     // filter out the 'OR' prerequisites
     let currentPrereqsArr = Array.from(props.currentPrereqs).filter(prereq => prereq.or == null)
-    
-
-    console.log(`CURRENTPREREQS: ${currentPrereqsArr[0]}`)
-    if(typeof currentPrereqsArr[0] !== 'undefined')
-    Object.keys(currentPrereqsArr[0]).map(x => console.log(`\t${x}: ${currentPrereqsArr[0][x]}`))
-
-    console.log(`ALLCOURSES: ${allCourses[0]}`)
-    if(typeof allCourses[0] !== 'undefined')
-    Object.keys(allCourses[0]).map(x => console.log(`\t${x}: ${allCourses[0][x]}`))
 
     let passedPrereqs = allCourses.filter(course => {
         if ( currentPrereqsArr.filter(x => x.courseType === course.courseType && x.courseValue === course.courseValue).length == 0){
@@ -29,10 +20,6 @@ function PrereqTable(props) {
         }
         
     })
-
-    console.log(`PREREQS PASSED AS PROP TO COURSEGROUP: `)
-    if(typeof passedPrereqs[0] !== 'undefined')
-    Object.keys(passedPrereqs[0]).map(x => console.log(`\t${x}: ${passedPrereqs[0][x]}`))
     
     return (
         <div>

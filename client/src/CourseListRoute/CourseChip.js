@@ -4,6 +4,7 @@ import Delete from '@material-ui/icons/CloseRounded'
 import Add from '@material-ui/icons/AddRounded'
 import CourseGroup from './CourseGroup.js'
 import DeleteIcon from '@material-ui/icons/DeleteOutlined'
+
 import { Typography, Card, CardContent, CardHeader, Avatar, IconButton } from '@material-ui/core';
 
 export function DeletableCourseChip(props) {
@@ -12,12 +13,12 @@ export function DeletableCourseChip(props) {
     if (orGroup) {
         let orCourses = props.course.or
         return (
-            <Card>
+            <Card style={{backgroundColor:'lightgrey'}}>
                 <CardHeader
-                    avatar={
-                        <Avatar style={{backgroundColor:'orange'}}>
-                            OR
-                        </Avatar>
+                    title={
+                        <div>
+                            AT LEAST ONE OF:
+                        </div>
                     }
                     action={
                         <IconButton>
@@ -37,6 +38,7 @@ export function DeletableCourseChip(props) {
     else {
         return (
             <Chip
+                style={{margin: '10px'}}    
                 label={props.course.courseType+' '+props.course.courseValue}
                 onDelete={() => props.onDelete(props.course)}
                 deleteIcon={<Delete />}
@@ -49,6 +51,7 @@ export function DeletableCourseChip(props) {
 export function AddableCourseChip(props) {
     return (
         <Chip
+            style={{margin: '10px'}}
             label={props.course.courseType+' '+props.course.courseValue}
             onDelete={() => props.onDelete(props.course)}
             deleteIcon={<Add />}

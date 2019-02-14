@@ -3,6 +3,7 @@ import {Button, Dialog, DialogContent, DialogActions, DialogTitle, withMobileDia
 import {AppBar, Tabs, Tab, Typography} from '@material-ui/core'
 import CurrentPreqs from './CurrentPrereqs.js'
 import AddSinglePrereq from './AddSinglePrereq.js'
+import AddOrGroupPrereq from './AddOrGroupPrereq.js'
 
 const TabContainer = (props) => (
     <Typography component="div" style={{ padding: 8 * 3 }}>
@@ -40,7 +41,7 @@ export default class Prereqs extends React.Component{
         const {fullscreen} = this.props
         return(
             <div>
-                <Button onClick={this.handleClickOpen}>
+                <Button variant='contained' color='primary' onClick={this.handleClickOpen}>
                     Prequisites
                 </Button>
                 <Dialog
@@ -65,7 +66,7 @@ export default class Prereqs extends React.Component{
                             </AppBar>
                             {this.state.value === 0 && <CurrentPreqs course={this.props.course}/>}
                             {this.state.value === 1 && <AddSinglePrereq course={this.props.course}/>}
-                            {this.state.value === 2 && <div>Add OR Group</div>}
+                            {this.state.value === 2 && <AddOrGroupPrereq course={this.props.course}/>}
                         </div>
                     </DialogContent>
                 </Dialog>
